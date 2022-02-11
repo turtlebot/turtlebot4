@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+<xacro:include filename="$(find irobot_create_description)/urdf/common_properties.urdf.xacro"/>
+
+<xacro:macro name="camera_bracket" params="name parent_link:=shell_link *origin">
+
+  <xacro:property name="mass" value="0.033"/>
+
+  <xacro:property name="link_name" value="${name}"/>
+  <xacro:property name="joint_name" value="${name}_joint"/>
+
+  <joint name="${joint_name}" type="fixed">
+    <parent link="${parent_link}"/>
+    <child link="${link_name}"/>
+    <xacro:insert_block name="origin"/>
+  </joint>
+
+  <link name="${link_name}">
+    <visual>
+      <geometry>
+       <mesh filename="file://$(find turtlebot4_description)/meshes/camera_bracket.STL" scale="0.001 0.001 0.001" />
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="${mass}"/>
+      <inertia ixx="0.0000579181" ixy="0.0" ixz="0.0000090679"
+	             iyy="0.0000559785" iyz="0.0" izz="0.0000140955" />
+    </inertial>
+  </link>
+
+  <gazebo reference="${joint_name}">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="${link_name}">
+    <xacro:material_black/>
+  </gazebo>
+
+</xacro:macro>
+
+</robot>

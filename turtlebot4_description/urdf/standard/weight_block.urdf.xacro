@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+<xacro:include filename="$(find irobot_create_description)/urdf/common_properties.urdf.xacro"/>
+
+<xacro:macro name="weight_block" params="name parent_link:=base_link *origin">
+
+  <xacro:property name="link_name" value="${name}"/>
+  <xacro:property name="joint_name" value="${name}_joint"/>
+
+  <xacro:property name="mass" value="0.061"/>
+
+  <joint name="${joint_name}" type="fixed">
+    <parent link="${parent_link}"/>
+    <child link="${link_name}"/>
+    <xacro:insert_block name="origin"/>
+  </joint>
+
+  <link name="${link_name}">
+    <visual>
+      <geometry>
+       <mesh filename="file://$(find turtlebot4_description)/meshes/weight_block.STL" scale="0.001 0.001 0.001" />
+      </geometry>
+    </visual>
+    <inertial>
+      <origin xyz="0.1 0 0"/>
+      <mass value="${mass}"/>
+      <inertia ixx="0.0000093482" ixy="-0.00000337434" ixz="0.0"
+	             iyy="0.00000436382" iyz="0.0" izz="0.00001288852" />
+    </inertial>
+  </link>
+
+  <gazebo reference="${joint_name}">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="${link_name}">
+    <xacro:material_darkgray/>
+  </gazebo>
+
+</xacro:macro>
+
+</robot>
