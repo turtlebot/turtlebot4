@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Provide a report for that the issue is
+about: Provide a report for what the issue is
 title: ''
 labels: bug
 assignees: roni-kreinin
