@@ -11,15 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# 
+#
 # @author Roni Kreinin (rkreinin@clearpathrobotics.com)
 
+
 from ament_index_python.packages import get_package_share_directory
+
 from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
 from launch.substitutions import Command, PathJoinSubstitution
 from launch.substitutions.launch_configuration import LaunchConfiguration
+
 from launch_ros.actions import Node
-from launch.actions import DeclareLaunchArgument
+
 
 ARGUMENTS = [
     DeclareLaunchArgument('model', default_value='standard',
@@ -33,7 +37,10 @@ ARGUMENTS = [
 
 def generate_launch_description():
     pkg_turtlebot4_description = get_package_share_directory('turtlebot4_description')
-    xacro_file = PathJoinSubstitution([pkg_turtlebot4_description, 'urdf', LaunchConfiguration('model'), 'turtlebot4.urdf.xacro'])
+    xacro_file = PathJoinSubstitution([pkg_turtlebot4_description,
+                                       'urdf',
+                                       LaunchConfiguration('model'),
+                                       'turtlebot4.urdf.xacro'])
 
     robot_state_publisher = Node(
         package='robot_state_publisher',
