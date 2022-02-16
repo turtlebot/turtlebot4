@@ -1,1 +1,0 @@
-# turtlebot4_description
