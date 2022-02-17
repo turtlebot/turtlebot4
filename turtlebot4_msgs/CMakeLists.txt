@@ -29,6 +29,7 @@ find_package(std_msgs REQUIRED)
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/UserLed.msg"
   "msg/UserButton.msg"
+  "msg/UserDisplay.msg"
 )
 
 ament_package()

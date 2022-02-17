@@ -1,0 +1,533 @@
+/*
+ * Copyright 2021 Clearpath Robotics, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @author Roni Kreinin (rkreinin@clearpathrobotics.com)
+ */
+
+#include "turtlebot4_node/turtlebot4.hpp"
+
+#include <stdio.h>
+#include <sys/types.h>
+#include <ifaddrs.h>
+#include <netinet/in.h>
+#include <string.h>
+#include <arpa/inet.h>
+
+#include <memory>
+#include <string>
+#include <thread>
+#include <vector>
+#include <utility>
+
+using turtlebot4::Turtlebot4;
+using Dock = irobot_create_msgs::action::DockServo;
+using Undock = irobot_create_msgs::action::Undock;
+using WallFollow = irobot_create_msgs::action::WallFollow;
+using EStop = irobot_create_msgs::srv::EStop;
+using Power = irobot_create_msgs::srv::RobotPower;
+
+/**
+ * @brief Turtlebot4 Node constructor
+ */
+Turtlebot4::Turtlebot4()
+: Node("turtlebot4_node",
+    rclcpp::NodeOptions().use_intra_process_comms(true)),
+  wheels_enabled_(true),
+  comms_timeout_ms_(15000)
+{
+  RCLCPP_INFO(get_logger(), "Init Turtlebot4 Node Main");
+
+  // Create node handle
+  node_handle_ = std::shared_ptr<::rclcpp::Node>(this, [](::rclcpp::Node *) {});
+
+  // Subscriptions
+  battery_sub_ = this->create_subscription<sensor_msgs::msg::BatteryState>(
+    "battery_state",
+    rclcpp::SensorDataQoS(),
+    std::bind(&Turtlebot4::battery_callback, this, std::placeholders::_1));
+
+  wheel_status_sub_ = this->create_subscription<irobot_create_msgs::msg::WheelStatus>(
+    "wheel_status",
+    rclcpp::SensorDataQoS(),
+    std::bind(&Turtlebot4::wheel_status_callback, this, std::placeholders::_1));
+
+  // Publishers
+  ip_pub_ = this->create_publisher<std_msgs::msg::String>(
+    "ip",
+    rclcpp::QoS(rclcpp::KeepLast(10)));
+
+  // ROS parameters
+  this->declare_parameter("model", Turtlebot4ModelName[Turtlebot4Model::STANDARD]);
+  if (this->get_parameter("model").as_string() ==
+    Turtlebot4ModelName[Turtlebot4Model::STANDARD]) {
+    model_ = Turtlebot4Model::STANDARD;
+  } else if (this->get_parameter("model").as_string() ==
+    Turtlebot4ModelName[Turtlebot4Model::LITE])
+  {
+    model_ = Turtlebot4Model::LITE;
+  } else {
+    RCLCPP_ERROR(
+      node_handle_->get_logger(), "Invalid Model %s",
+      this->get_parameter("model").as_string().c_str());
+    return;
+  }
+
+  this->declare_parameter("wifi.interface", "wlan0");
+  wifi_interface_ = this->get_parameter("wifi.interface").as_string();
+
+  this->declare_parameter(
+    "buttons.create3_1",
+    std::vector<std::string>({"Dock", "", ""}));
+  this->declare_parameter(
+    "buttons.create3_power",
+    std::vector<std::string>({"EStop", "Power", "3000"}));
+  this->declare_parameter(
+    "buttons.create3_2",
+    std::vector<std::string>({"Undock", "", ""}));
+
+  if (model_ == Turtlebot4Model::STANDARD) {
+    this->declare_parameter("buttons.hmi_1", std::vector<std::string>({"Select", "", ""}));
+    this->declare_parameter("buttons.hmi_2", std::vector<std::string>({"Home", "", ""}));
+    this->declare_parameter("buttons.hmi_3", std::vector<std::string>({"Scroll Up", "", ""}));
+    this->declare_parameter("buttons.hmi_4", std::vector<std::string>({"Scroll Down", "", ""}));
+    this->declare_parameter("menu.entries", std::vector<std::string>());
+  }
+
+  turtlebot4_buttons_.push_back(
+    Turtlebot4Button(
+      Turtlebot4ButtonEnum::CREATE3_1,
+      this->get_parameter("buttons.create3_1").as_string_array()));
+  turtlebot4_buttons_.push_back(
+    Turtlebot4Button(
+      Turtlebot4ButtonEnum::CREATE3_POWER,
+      this->get_parameter("buttons.create3_power").as_string_array()));
+  turtlebot4_buttons_.push_back(
+    Turtlebot4Button(
+      Turtlebot4ButtonEnum::CREATE3_2,
+      this->get_parameter("buttons.create3_2").as_string_array()));
+
+  if (model_ == Turtlebot4Model::STANDARD) {
+    turtlebot4_buttons_.push_back(
+      Turtlebot4Button(
+        Turtlebot4ButtonEnum::HMI_1,
+        this->get_parameter("buttons.hmi_1").as_string_array()));
+    turtlebot4_buttons_.push_back(
+      Turtlebot4Button(
+        Turtlebot4ButtonEnum::HMI_2,
+        this->get_parameter("buttons.hmi_2").as_string_array()));
+    turtlebot4_buttons_.push_back(
+      Turtlebot4Button(
+        Turtlebot4ButtonEnum::HMI_3,
+        this->get_parameter("buttons.hmi_3").as_string_array()));
+    turtlebot4_buttons_.push_back(
+      Turtlebot4Button(
+        Turtlebot4ButtonEnum::HMI_4,
+        this->get_parameter("buttons.hmi_4").as_string_array()));
+
+    auto entries = this->get_parameter("menu.entries").as_string_array();
+
+    for (auto entry : entries) {
+      turtlebot4_menu_entries_.push_back(Turtlebot4MenuEntry(entry));
+    }
+  }
+
+  // Create action/service clients
+  dock_client_ = std::make_unique<Turtlebot4Action<Dock>>(node_handle_, "dock");
+  undock_client_ = std::make_unique<Turtlebot4Action<Undock>>(node_handle_, "undock");
+  wall_follow_client_ = std::make_unique<Turtlebot4Action<WallFollow>>(node_handle_, "wall_follow");
+  estop_client_ = std::make_unique<Turtlebot4Service<EStop>>(node_handle_, "e_stop");
+  power_client_ = std::make_unique<Turtlebot4Service<Power>>(node_handle_, "robot_power");
+
+  function_callbacks_ = {
+    {"Dock", std::bind(&Turtlebot4::dock_function_callback, this)},
+    {"Undock", std::bind(&Turtlebot4::undock_function_callback, this)},
+    {"Follow", std::bind(&Turtlebot4::follow_function_callback, this)},
+    {"EStop", std::bind(&Turtlebot4::estop_function_callback, this)},
+    {"Power", std::bind(&Turtlebot4::power_function_callback, this)},
+    {"Scroll Up", std::bind(&Turtlebot4::scroll_up_function_callback, this)},
+    {"Scroll Down", std::bind(&Turtlebot4::scroll_down_function_callback, this)},
+    {"Select", std::bind(&Turtlebot4::select_function_callback, this)},
+    {"Back", std::bind(&Turtlebot4::back_function_callback, this)},
+    {"Help", std::bind(&Turtlebot4::help_function_callback, this)},
+  };
+
+  // Set function callbacks
+  add_button_function_callbacks();
+  add_menu_function_callbacks();
+
+  // Buttons
+  buttons_ = std::make_unique<Buttons>(model_, turtlebot4_buttons_, node_handle_);
+
+  if (model_ == Turtlebot4Model::STANDARD) {
+    // Display
+    display_ = std::make_unique<Display>(turtlebot4_menu_entries_, node_handle_);
+
+    // Leds
+    leds_ = std::make_unique<Leds>(node_handle_);
+  }
+
+  run();
+}
+
+/**
+ * @brief Turtlebot4 Node run
+ */
+void Turtlebot4::run()
+{
+  RCLCPP_INFO(this->get_logger(), "Turtlebot4 %s running.", Turtlebot4ModelName[model_].c_str());
+
+  if (model_ == Turtlebot4Model::STANDARD) {
+    // Set Power LED
+    leds_->set_led(POWER, GREEN);
+    // Set Motors LED
+    leds_->set_led(MOTORS, GREEN);
+
+    display_timer(std::chrono::milliseconds(50));
+    leds_timer(std::chrono::milliseconds(50));
+  }
+
+  buttons_timer(std::chrono::milliseconds(10));
+  wifi_timer(std::chrono::milliseconds(5000));
+  comms_timer(std::chrono::milliseconds(comms_timeout_ms_));
+}
+
+/**
+ * @brief Creates and runs timer to update display
+ * @input timeout - Sets timer period in milliseconds
+ */
+void Turtlebot4::display_timer(const std::chrono::milliseconds timeout)
+{
+  display_timer_ = this->create_wall_timer(
+    timeout,
+    [this]() -> void
+    {
+      display_->spin_once();
+    });
+}
+
+/**
+ * @brief Creates and runs timer to poll buttons
+ * @input timeout - Sets timer period in milliseconds
+ */
+void Turtlebot4::buttons_timer(const std::chrono::milliseconds timeout)
+{
+  buttons_timer_ = this->create_wall_timer(
+    timeout,
+    [this]() -> void
+    {
+      buttons_->spin_once();
+    });
+}
+
+/**
+ * @brief Creates and runs timer to poll buttons
+ * @input timeout - Sets timer period in milliseconds
+ */
+void Turtlebot4::leds_timer(const std::chrono::milliseconds timeout)
+{
+  leds_timer_ = this->create_wall_timer(
+    timeout,
+    [this]() -> void
+    {
+      leds_->spin_once();
+    });
+}
+
+/**
+ * @brief Creates and runs timer to check Wifi connection
+ * @input timeout - Sets timer period in milliseconds
+ */
+void Turtlebot4::wifi_timer(const std::chrono::milliseconds timeout)
+{
+  wifi_timer_ = this->create_wall_timer(
+    timeout,
+    [this]() -> void
+    {
+      std::string ip = this->get_ip();
+
+      // Publish IP
+      std_msgs::msg::String msg;
+      msg.data = ip;
+      this->ip_pub_->publish(std::move(msg));
+
+      if (this->model_ == Turtlebot4Model::STANDARD) {
+        display_->set_ip(ip);
+
+        if (ip == UNKNOWN_IP) {
+          leds_->set_led(WIFI, OFF);
+        } else {
+          leds_->set_led(WIFI, GREEN);
+        }
+      }
+    });
+}
+
+/**
+ * @brief Creates and runs timer for comms timeout
+ * @input timeout - Sets timer period in milliseconds
+ */
+void Turtlebot4::comms_timer(const std::chrono::milliseconds timeout)
+{
+  comms_timer_ = this->create_wall_timer(
+    timeout,
+    [this]() -> void
+    {
+      if (this->model_ == Turtlebot4Model::STANDARD) {
+        leds_->set_led(COMMS, OFF);
+      }
+    });
+}
+
+/**
+ * @brief Battery subscription callback
+ * @input battery_state_msg - Received message on battery topic
+ */
+void Turtlebot4::battery_callback(const sensor_msgs::msg::BatteryState::SharedPtr battery_state_msg)
+{
+  if (model_ == Turtlebot4Model::STANDARD) {
+    display_->set_battery(battery_state_msg);
+
+    // Reset Comms timer
+    comms_timer_->cancel();
+    leds_->set_led(COMMS, GREEN);
+    comms_timer(std::chrono::milliseconds(comms_timeout_ms_));
+
+    // Set Battery LED
+    if (battery_state_msg->percentage > 0.5) {
+      leds_->set_led(BATTERY, GREEN);
+    } else if (battery_state_msg->percentage > 0.2) {
+      leds_->set_led(BATTERY, YELLOW);
+    } else if (battery_state_msg->percentage > 0.05) {
+      leds_->set_led(BATTERY, RED);
+    } else {
+      leds_->blink(BATTERY, 200, 0.5, RED);
+    }
+  }
+}
+
+void Turtlebot4::wheel_status_callback(
+  const irobot_create_msgs::msg::WheelStatus::SharedPtr wheel_status_msg)
+{
+  wheels_enabled_ = wheel_status_msg->wheels_enabled;
+
+  if (model_ == Turtlebot4Model::STANDARD) {
+    // Set Motors LED
+    if (wheels_enabled_) {
+      leds_->set_led(MOTORS, GREEN);
+    } else {
+      leds_->set_led(MOTORS, OFF);
+    }
+  }
+}
+
+/**
+ * @brief Sends dock action goal
+ */
+void Turtlebot4::dock_function_callback()
+{
+  if (dock_client_ != nullptr) {
+    RCLCPP_INFO(this->get_logger(), "Docking");
+    dock_client_->send_goal();
+  } else {
+    RCLCPP_ERROR(this->get_logger(), "Dock client NULL");
+  }
+}
+
+/**
+ * @brief Sends undock action goal
+ */
+void Turtlebot4::undock_function_callback()
+{
+  if (undock_client_ != nullptr) {
+    RCLCPP_INFO(this->get_logger(), "Undocking");
+    undock_client_->send_goal();
+  } else {
+    RCLCPP_ERROR(this->get_logger(), "Undock client NULL");
+  }
+}
+
+/**
+ * @brief Sends follow action goal
+ */
+void Turtlebot4::follow_function_callback()
+{
+  if (wall_follow_client_ != nullptr) {
+    RCLCPP_INFO(this->get_logger(), "Wall follow");
+    wall_follow_client_->send_goal();
+  } else {
+    RCLCPP_ERROR(this->get_logger(), "Follow client NULL");
+  }
+}
+
+/**
+ * @brief Sends estop service request
+ */
+void Turtlebot4::estop_function_callback()
+{
+  if (estop_client_ != nullptr) {
+    // Make request
+    auto request = std::make_shared<EStop::Request>();
+
+    request->e_stop_on = wheels_enabled_;
+
+    if (request->e_stop_on) {
+      RCLCPP_INFO(this->get_logger(), "Setting EStop");
+    } else {
+      RCLCPP_INFO(this->get_logger(), "Clearing EStop");
+    }
+
+    estop_client_->make_request(request);
+  } else {
+    RCLCPP_ERROR(this->get_logger(), "EStop client NULL");
+  }
+}
+
+/**
+ * @brief Sends power service request
+ */
+void Turtlebot4::power_function_callback()
+{
+  if (power_client_ != nullptr) {
+    // Make power off request
+    auto request = std::make_shared<Power::Request>();
+
+    RCLCPP_ERROR(this->get_logger(), "Power OFF");
+    power_client_->make_request(request);
+  } else {
+    RCLCPP_ERROR(this->get_logger(), "Power client NULL");
+  }
+}
+
+void Turtlebot4::scroll_up_function_callback()
+{
+  if (model_ == Turtlebot4Model::STANDARD) {
+    display_->scroll_up();
+  }
+}
+
+void Turtlebot4::scroll_down_function_callback()
+{
+  if (model_ == Turtlebot4Model::STANDARD) {
+    display_->scroll_down();
+  }
+}
+
+void Turtlebot4::select_function_callback()
+{
+  if (model_ == Turtlebot4Model::STANDARD) {
+    display_->select();
+  }
+}
+
+void Turtlebot4::back_function_callback()
+{
+  if (model_ == Turtlebot4Model::STANDARD) {
+    display_->back();
+  }
+}
+
+void Turtlebot4::help_function_callback()
+{
+  if (model_ == Turtlebot4Model::STANDARD) {
+    std::vector<std::string> help_message;
+    help_message.push_back("Button usage:");
+    help_message.push_back("1:" + turtlebot4_buttons_[Turtlebot4ButtonEnum::HMI_1].short_function_);
+    help_message.push_back("2:" + turtlebot4_buttons_[Turtlebot4ButtonEnum::HMI_2].short_function_);
+    help_message.push_back("3:" + turtlebot4_buttons_[Turtlebot4ButtonEnum::HMI_3].short_function_);
+    help_message.push_back("4:" + turtlebot4_buttons_[Turtlebot4ButtonEnum::HMI_4].short_function_);
+    display_->show_message(help_message);
+  }
+}
+
+/**
+ * @brief Invalid or empty function specified in ROS parameters - do nothing
+ */
+void Turtlebot4::unused_function_callback()
+{
+}
+
+/**
+ * @brief Creates action or service clients and adds appropriate callbacks
+ * for each function declared in ROS parameters
+ */
+void Turtlebot4::add_button_function_callbacks()
+{
+  for (auto & button : turtlebot4_buttons_) {
+    // Short press function
+    if (function_callbacks_.find(button.short_function_) != function_callbacks_.end()) {
+      button.short_cb_ = function_callbacks_[button.short_function_];
+    } else {
+      button.short_cb_ = std::bind(&Turtlebot4::unused_function_callback, this);
+    }
+
+    // Long press function
+    if (function_callbacks_.find(button.long_function_) != function_callbacks_.end()) {
+      button.long_cb_ = function_callbacks_[button.long_function_];
+    } else {
+      button.long_cb_ = std::bind(&Turtlebot4::unused_function_callback, this);
+    }
+  }
+}
+
+/**
+ * @brief Creates action or service clients and adds appropriate callbacks
+ * for each function declared in ROS parameters
+ */
+void Turtlebot4::add_menu_function_callbacks()
+{
+  for (auto & entry : turtlebot4_menu_entries_) {
+    if (function_callbacks_.find(entry.name_) != function_callbacks_.end()) {
+      entry.cb_ = function_callbacks_[entry.name_];
+    } else {
+      entry.cb_ = std::bind(&Turtlebot4::unused_function_callback, this);
+    }
+  }
+}
+
+/**
+ * @brief Get IP of network interface specified in ROS parameters
+ */
+std::string Turtlebot4::get_ip()
+{
+  struct ifaddrs * ifAddrStruct = NULL;
+  struct ifaddrs * ifa = NULL;
+  void * tmpAddrPtr = NULL;
+
+  getifaddrs(&ifAddrStruct);
+
+  for (ifa = ifAddrStruct; ifa != NULL; ifa = ifa->ifa_next) {
+    if (!ifa->ifa_addr) {
+      continue;
+    }
+    // IPv4
+    if (ifa->ifa_addr->sa_family == AF_INET) {
+      struct sockaddr_in * ifa_in_addr = (struct sockaddr_in *)ifa->ifa_addr;
+      tmpAddrPtr = &(ifa_in_addr)->sin_addr;
+      char addressBuffer[INET_ADDRSTRLEN];
+      inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
+      // Find specified network interface
+      if (strcmp(ifa->ifa_name, wifi_interface_.c_str()) == 0) {
+        if (ifAddrStruct != NULL) {
+          freeifaddrs(ifAddrStruct);
+        }
+        return static_cast<std::string>(addressBuffer);
+      }
+    }
+  }
+  if (ifAddrStruct != NULL) {
+    freeifaddrs(ifAddrStruct);
+  }
+  return UNKNOWN_IP;
+}
