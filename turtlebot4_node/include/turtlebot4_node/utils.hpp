@@ -32,24 +32,6 @@ namespace turtlebot4
 #define HMI_BUTTON_COUNT 4
 #define TOTAL_BUTTON_COUNT 7
 
-// Pin definitions
-#define HMI_BUTTON_1_PIN 13
-#define HMI_BUTTON_2_PIN 19
-#define HMI_BUTTON_3_PIN 16
-#define HMI_BUTTON_4_PIN 26
-
-#define HMI_LED_POWER_PIN         17
-#define HMI_LED_MOTORS_PIN        18
-#define HMI_LED_COMMS_PIN         27
-#define HMI_LED_WIFI_PIN          24
-#define HMI_LED_BATTERY_GREEN_PIN 22
-#define HMI_LED_BATTERY_RED_PIN   23
-#define HMI_LED_USER_1_PIN        25
-#define HMI_LED_USER_2_GREEN_PIN  6
-#define HMI_LED_USER_2_RED_PIN    12
-
-#define HMI_DISPLAY_RESET_PIN     2
-
 #define UNKNOWN_IP "UNKNOWN"
 
 enum class Turtlebot4Model
@@ -60,8 +42,8 @@ enum class Turtlebot4Model
 
 static std::map<Turtlebot4Model, std::string> Turtlebot4ModelName
 {
-  {Turtlebot4Model::LITE, "Lite"},
-  {Turtlebot4Model::STANDARD, "Standard"}
+  {Turtlebot4Model::LITE, "lite"},
+  {Turtlebot4Model::STANDARD, "standard"}
 };
 
 typedef std::function<void (void)> turtlebot4_function_callback_t;

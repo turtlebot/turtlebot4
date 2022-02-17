@@ -2,6 +2,7 @@
 # that are displayed on the Turtlebot4 display
 # selected_entry indicates which menu entry is currently selected
 
-string header
+string ip
+string battery
 string[5] entries
 int32 selected_entry

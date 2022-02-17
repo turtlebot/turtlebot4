@@ -78,7 +78,7 @@ struct Turtlebot4Led
 
   void create_publisher(rclcpp::Node::SharedPtr nh, std::string topic)
   {
-    led_pub_ = nh->create_publisher<std_msgs::msg::Int32>(topic, rclcpp::SensorDataQoS());
+    led_pub_ = nh->create_publisher<std_msgs::msg::Int32>(topic, rclcpp::QoS(rclcpp::KeepLast(10)));
   }
 
   void spin_once()

@@ -35,6 +35,7 @@ Display::Display(
   std::shared_ptr<rclcpp::Node> & nh)
 : nh_(nh),
   menu_entries_(entries),
+  menu_override_(false),
   scroll_position_(0),
   selected_line_(0),
   ip_(UNKNOWN_IP),
@@ -133,19 +134,6 @@ void Display::back()
   }
 }
 
-void Display::update_header()
-{
-  header_ = ip_ + " " + std::to_string(battery_percentage_) + "%";
-
-  // Pad string
-  if (header_.length() < DISPLAY_CHAR_PER_LINE_HEADER) {
-    header_.insert(header_.length(), DISPLAY_CHAR_PER_LINE_HEADER - header_.length(), ' ');
-  } else if (header_.length() > DISPLAY_CHAR_PER_LINE_HEADER) {
-    // Remove excess characters
-    header_ = header_.substr(0, DISPLAY_CHAR_PER_LINE_HEADER);
-  }
-}
-
 /**
  * @brief Format and return default display message
  */
@@ -226,12 +214,12 @@ void Display::show_message(std::string message)
  */
 void Display::update()
 {
-  update_header();
   visible_entries_ = get_visible_entries();
 
   auto display_msg = std::make_unique<turtlebot4_msgs::msg::UserDisplay>();
 
-  display_msg->header = header_;
+  display_msg->ip = ip_;
+  display_msg->battery = std::to_string(battery_percentage_);
 
   if (menu_override_) {
     display_msg->selected_entry = -1;
