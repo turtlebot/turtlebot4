@@ -25,6 +25,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 
+#include <chrono>
 #include <memory>
 #include <string>
 #include <thread>
@@ -63,6 +64,11 @@ Turtlebot4::Turtlebot4()
     rclcpp::SensorDataQoS(),
     std::bind(&Turtlebot4::wheel_status_callback, this, std::placeholders::_1));
 
+  joy_sub_ = this->create_subscription<sensor_msgs::msg::Joy>(
+    "joy",
+    rclcpp::QoS(10),
+    std::bind(&Turtlebot4::joy_callback, this, std::placeholders::_1));
+
   // Publishers
   ip_pub_ = this->create_publisher<std_msgs::msg::String>(
     "ip",
@@ -71,7 +77,8 @@ Turtlebot4::Turtlebot4()
   // ROS parameters
   this->declare_parameter("model", Turtlebot4ModelName[Turtlebot4Model::STANDARD]);
   if (this->get_parameter("model").as_string() ==
-    Turtlebot4ModelName[Turtlebot4Model::STANDARD]) {
+    Turtlebot4ModelName[Turtlebot4Model::STANDARD])
+  {
     model_ = Turtlebot4Model::STANDARD;
   } else if (this->get_parameter("model").as_string() ==
     Turtlebot4ModelName[Turtlebot4Model::LITE])
@@ -330,6 +337,27 @@ void Turtlebot4::wheel_status_callback(
     } else {
       leds_->set_led(MOTORS, OFF);
     }
+  }
+}
+
+void Turtlebot4::joy_callback(
+  const sensor_msgs::msg::Joy::SharedPtr joy_msg)
+{
+  static std::chrono::time_point<std::chrono::steady_clock> last_msg_time_;
+
+  if (std::chrono::steady_clock::now() - last_msg_time_ > std::chrono::milliseconds(200)) {
+    if (joy_msg->axes[6] == 1.0f) {
+      back_function_callback();
+    } else if (joy_msg->axes[6] == -1.0f) {
+      select_function_callback();
+    } else if (joy_msg->axes[7] == 1.0f) {
+      scroll_up_function_callback();
+    } else if (joy_msg->axes[7] == -1.0f) {
+      scroll_down_function_callback();
+    } else {
+      return;
+    }
+    last_msg_time_ = std::chrono::steady_clock::now();
   }
 }
 

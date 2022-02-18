@@ -21,6 +21,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/battery_state.hpp>
+#include <sensor_msgs/msg/joy.hpp>
 #include <std_msgs/msg/string.hpp>
 
 #include <chrono>
@@ -76,6 +77,8 @@ private:
   void battery_callback(const sensor_msgs::msg::BatteryState::SharedPtr battery_state_msg);
   void wheel_status_callback(
     const irobot_create_msgs::msg::WheelStatus::SharedPtr wheel_status_msg);
+  void joy_callback(
+    const sensor_msgs::msg::Joy::SharedPtr joy_msg);
 
   // Function callbacks
   void dock_function_callback();
@@ -149,6 +152,7 @@ private:
   // Subscribers
   rclcpp::Subscription<sensor_msgs::msg::BatteryState>::SharedPtr battery_sub_;
   rclcpp::Subscription<irobot_create_msgs::msg::WheelStatus>::SharedPtr wheel_status_sub_;
+  rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_sub_;
 
   // Publishers
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr ip_pub_;
