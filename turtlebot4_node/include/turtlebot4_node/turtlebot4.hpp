@@ -80,7 +80,8 @@ private:
   // Function callbacks
   void dock_function_callback();
   void undock_function_callback();
-  void follow_function_callback();
+  void wall_follow_left_function_callback();
+  void wall_follow_right_function_callback();
   void estop_function_callback();
   void power_function_callback();
   void scroll_up_function_callback();

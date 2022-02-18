@@ -89,13 +89,13 @@ Turtlebot4::Turtlebot4()
 
   this->declare_parameter(
     "buttons.create3_1",
-    std::vector<std::string>({"Dock", "", ""}));
+    std::vector<std::string>({"Dock", "Wall Follow Left", "2000"}));
   this->declare_parameter(
     "buttons.create3_power",
     std::vector<std::string>({"EStop", "Power", "3000"}));
   this->declare_parameter(
     "buttons.create3_2",
-    std::vector<std::string>({"Undock", "", ""}));
+    std::vector<std::string>({"Undock", "Wall Follow Right", "2000"}));
 
   if (model_ == Turtlebot4Model::STANDARD) {
     this->declare_parameter("buttons.hmi_1", std::vector<std::string>({"Select", "", ""}));
@@ -153,7 +153,8 @@ Turtlebot4::Turtlebot4()
   function_callbacks_ = {
     {"Dock", std::bind(&Turtlebot4::dock_function_callback, this)},
     {"Undock", std::bind(&Turtlebot4::undock_function_callback, this)},
-    {"Follow", std::bind(&Turtlebot4::follow_function_callback, this)},
+    {"Wall Follow Left", std::bind(&Turtlebot4::wall_follow_left_function_callback, this)},
+    {"Wall Follow Right", std::bind(&Turtlebot4::wall_follow_right_function_callback, this)},
     {"EStop", std::bind(&Turtlebot4::estop_function_callback, this)},
     {"Power", std::bind(&Turtlebot4::power_function_callback, this)},
     {"Scroll Up", std::bind(&Turtlebot4::scroll_up_function_callback, this)},
@@ -361,11 +362,34 @@ void Turtlebot4::undock_function_callback()
 /**
  * @brief Sends follow action goal
  */
-void Turtlebot4::follow_function_callback()
+void Turtlebot4::wall_follow_left_function_callback()
 {
   if (wall_follow_client_ != nullptr) {
-    RCLCPP_INFO(this->get_logger(), "Wall follow");
-    wall_follow_client_->send_goal();
+    RCLCPP_INFO(this->get_logger(), "Wall Follow Left");
+    auto goal_msg = std::make_shared<WallFollow::Goal>();
+    auto runtime = builtin_interfaces::msg::Duration();
+    runtime.sec = 10;
+    goal_msg->follow_side = WallFollow::Goal::FOLLOW_LEFT;
+    goal_msg->max_runtime = runtime;
+    wall_follow_client_->send_goal(goal_msg);
+  } else {
+    RCLCPP_ERROR(this->get_logger(), "Follow client NULL");
+  }
+}
+
+/**
+ * @brief Sends follow action goal
+ */
+void Turtlebot4::wall_follow_right_function_callback()
+{
+  if (wall_follow_client_ != nullptr) {
+    RCLCPP_INFO(this->get_logger(), "Wall Follow Right");
+    auto goal_msg = std::make_shared<WallFollow::Goal>();
+    auto runtime = builtin_interfaces::msg::Duration();
+    runtime.sec = 10;
+    goal_msg->follow_side = WallFollow::Goal::FOLLOW_RIGHT;
+    goal_msg->max_runtime = runtime;
+    wall_follow_client_->send_goal(goal_msg);
   } else {
     RCLCPP_ERROR(this->get_logger(), "Follow client NULL");
   }

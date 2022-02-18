@@ -84,6 +84,46 @@ public:
       });
   }
 
+  void send_goal(std::shared_ptr<typename ActionT::Goal> goal_msg)
+  {
+    RCLCPP_INFO(nh_->get_logger(), "Waiting for %s action server", action_.c_str());
+
+    // Cancel existing timers
+    if (timer_ != nullptr) {
+      timer_->cancel();
+    }
+
+    // Create timer to check for service without blocking
+    timer_ = nh_->create_wall_timer(
+      std::chrono::milliseconds(1000),
+      [this, goal_msg]() -> void
+      {
+        // Wait for action server
+        if (client_->wait_for_action_server(std::chrono::milliseconds(10))) {
+          RCLCPP_INFO(
+            nh_->get_logger(), "%s action server available, sending goal",
+            action_.c_str());
+          timer_->cancel();
+
+          // Set goal callbacks
+          auto send_goal_options = typename rclcpp_action::Client<ActionT>::SendGoalOptions();
+          send_goal_options.goal_response_callback =
+          std::bind(&Turtlebot4Action::goal_response_callback, this, std::placeholders::_1);
+          send_goal_options.feedback_callback =
+          std::bind(
+            &Turtlebot4Action::feedback_callback, this, std::placeholders::_1,
+            std::placeholders::_2);
+          send_goal_options.result_callback =
+          std::bind(&Turtlebot4Action::result_callback, this, std::placeholders::_1);
+
+          // Send goal
+          this->client_->async_send_goal(*goal_msg, send_goal_options);
+        } else {
+          // TODO(roni-kreinin): Add timeout
+        }
+      });
+  }
+
 private:
   // Node handle
   std::shared_ptr<rclcpp::Node> nh_;

@@ -57,8 +57,8 @@ struct Turtlebot4Button
   Turtlebot4ButtonEnum button_;
 
   std::string short_function_;
-  turtlebot4_function_callback_t short_cb_;
   std::string long_function_;
+  turtlebot4_function_callback_t short_cb_;
   turtlebot4_function_callback_t long_cb_;
 
   int long_press_duration_ms_;

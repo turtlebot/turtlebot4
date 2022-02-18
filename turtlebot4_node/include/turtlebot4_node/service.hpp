@@ -42,8 +42,6 @@ public:
 
   void make_request(std::shared_ptr<typename ServiceT::Request> request)
   {
-    request_ = request;
-
     // Cancel existing timers
     if (timer_ != nullptr) {
       timer_->cancel();
@@ -52,7 +50,7 @@ public:
     // Create timer to check for service without blocking
     timer_ = nh_->create_wall_timer(
       std::chrono::milliseconds(1000),
-      [this]() -> void
+      [this, request]() -> void
       {
         // Check for service
         if (client_->wait_for_service(std::chrono::milliseconds(10))) {
@@ -61,7 +59,7 @@ public:
 
           // Send request
           auto future_result = client_->async_send_request(
-            request_,
+            request,
             std::bind(&Turtlebot4Service::response_callback, this, std::placeholders::_1));
         } else if (!rclcpp::ok()) {
           RCLCPP_ERROR(
@@ -83,8 +81,6 @@ private:
   rclcpp::TimerBase::SharedPtr timer_;
   // Service client
   typename rclcpp::Client<ServiceT>::SharedPtr client_;
-  // Service request
-  std::shared_ptr<typename ServiceT::Request> request_;
 
   // TODO(roni-kreinin): Virtual callback?
   // Service response callback
