@@ -28,11 +28,11 @@
 namespace turtlebot4
 {
 
-#define CREATE3_BUTTON_COUNT 3
-#define HMI_BUTTON_COUNT 4
-#define TOTAL_BUTTON_COUNT 7
+static constexpr auto CREATE3_BUTTON_COUNT = 3;
+static constexpr auto HMI_BUTTON_COUNT = 4;
+static constexpr auto TOTAL_BUTTON_COUNT = 7;
 
-#define UNKNOWN_IP "UNKNOWN"
+static const std::string UNKNOWN_IP = "UNKNOWN";
 
 enum class Turtlebot4Model
 {

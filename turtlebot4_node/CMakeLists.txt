@@ -49,8 +49,6 @@ set(DEPENDENCIES
   "turtlebot4_msgs"
 )
 
-target_link_libraries(${PROJECT_NAME}_lib ${GPIOD_LIBRARY})
-
 ament_target_dependencies(${PROJECT_NAME}_lib ${DEPENDENCIES})
 
 set(EXECUTABLE_NAME "turtlebot4_node")

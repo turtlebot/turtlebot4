@@ -35,9 +35,9 @@
 namespace turtlebot4
 {
 
-#define DISPLAY_NUM_LINES 5
-#define DISPLAY_CHAR_PER_LINE 18
-#define DISPLAY_CHAR_PER_LINE_HEADER 21
+static constexpr auto DISPLAY_NUM_LINES = 5;
+static constexpr auto DISPLAY_CHAR_PER_LINE = 18;
+static constexpr auto DISPLAY_CHAR_PER_LINE_HEADER = 21;
 
 struct Turtlebot4MenuEntry
 {
