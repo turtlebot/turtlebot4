@@ -33,32 +33,6 @@
 namespace turtlebot4
 {
 
-enum Turtlebot4LedEnum
-{
-  POWER,
-  MOTORS,
-  COMMS,
-  WIFI,
-  BATTERY,
-  USER_1,
-  USER_2,
-  COUNT
-};
-
-enum Turtlebot4LedType
-{
-  GREEN_ONLY,
-  RED_GREEN
-};
-
-enum Turtlebot4LedColor
-{
-  OFF = 0,
-  GREEN = 1,
-  RED = 2,
-  YELLOW = 3
-};
-
 struct Turtlebot4Led
 {
   Turtlebot4LedType type_;
