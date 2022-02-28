@@ -21,7 +21,6 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/battery_state.hpp>
-#include <sensor_msgs/msg/joy.hpp>
 #include <std_msgs/msg/string.hpp>
 
 #include <chrono>
@@ -123,6 +122,7 @@ private:
   std::vector<Turtlebot4Button> turtlebot4_buttons_;
   std::vector<Turtlebot4MenuEntry> turtlebot4_menu_entries_;
   std::map<std::string, turtlebot4_function_callback_t> function_callbacks_;
+  std::map<Turtlebot4ButtonEnum, std::string> button_parameters_;
 
   // Display
   std::unique_ptr<Display> display_;
@@ -152,7 +152,6 @@ private:
   // Subscribers
   rclcpp::Subscription<sensor_msgs::msg::BatteryState>::SharedPtr battery_sub_;
   rclcpp::Subscription<irobot_create_msgs::msg::WheelStatus>::SharedPtr wheel_status_sub_;
-  rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_sub_;
 
   // Publishers
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr ip_pub_;

@@ -53,27 +53,6 @@ Turtlebot4::Turtlebot4()
   // Create node handle
   node_handle_ = std::shared_ptr<::rclcpp::Node>(this, [](::rclcpp::Node *) {});
 
-  // Subscriptions
-  battery_sub_ = this->create_subscription<sensor_msgs::msg::BatteryState>(
-    "battery_state",
-    rclcpp::SensorDataQoS(),
-    std::bind(&Turtlebot4::battery_callback, this, std::placeholders::_1));
-
-  wheel_status_sub_ = this->create_subscription<irobot_create_msgs::msg::WheelStatus>(
-    "wheel_status",
-    rclcpp::SensorDataQoS(),
-    std::bind(&Turtlebot4::wheel_status_callback, this, std::placeholders::_1));
-
-  joy_sub_ = this->create_subscription<sensor_msgs::msg::Joy>(
-    "joy",
-    rclcpp::QoS(10),
-    std::bind(&Turtlebot4::joy_callback, this, std::placeholders::_1));
-
-  // Publishers
-  ip_pub_ = this->create_publisher<std_msgs::msg::String>(
-    "ip",
-    rclcpp::QoS(rclcpp::KeepLast(10)));
-
   // ROS parameters
   this->declare_parameter("model", Turtlebot4ModelName[Turtlebot4Model::STANDARD]);
   if (this->get_parameter("model").as_string() ==
@@ -94,61 +73,75 @@ Turtlebot4::Turtlebot4()
   this->declare_parameter("wifi.interface", "wlan0");
   wifi_interface_ = this->get_parameter("wifi.interface").as_string();
 
-  this->declare_parameter(
-    "buttons.create3_1",
-    std::vector<std::string>({"Dock", "Wall Follow Left", "2000"}));
-  this->declare_parameter(
-    "buttons.create3_power",
-    std::vector<std::string>({"EStop", "Power", "3000"}));
-  this->declare_parameter(
-    "buttons.create3_2",
-    std::vector<std::string>({"Undock", "Wall Follow Right", "2000"}));
+  button_parameters_ = {
+    {CREATE3_1, "buttons.create3_1"},
+    {CREATE3_POWER, "buttons.create3_power"},
+    {CREATE3_2, "buttons.create3_2"},
+    {HMI_1, "buttons.hmi_1"},
+    {HMI_2, "buttons.hmi_2"},
+    {HMI_3, "buttons.hmi_3"},
+    {HMI_4, "buttons.hmi_4"},
+    {CONTROLLER_A, "controller.a"},
+    {CONTROLLER_B, "controller.b"},
+    {CONTROLLER_X, "controller.x"},
+    {CONTROLLER_Y, "controller.y"},
+    {CONTROLLER_UP, "controller.up"},
+    {CONTROLLER_DOWN, "controller.down"},
+    {CONTROLLER_LEFT, "controller.left"},
+    {CONTROLLER_RIGHT, "controller.right"},
+    {CONTROLLER_L1, "controller.l1"},
+    {CONTROLLER_L2, "controller.l2"},
+    {CONTROLLER_L3, "controller.l3"},
+    {CONTROLLER_R1, "controller.r1"},
+    {CONTROLLER_R2, "controller.r2"},
+    {CONTROLLER_R3, "controller.r3"},
+    {CONTROLLER_SHARE, "controller.share"},
+    {CONTROLLER_OPTIONS, "controller.options"},
+    {CONTROLLER_HOME, "controller.home"},
+  };
+
+  Turtlebot4ButtonEnum last;
 
   if (model_ == Turtlebot4Model::STANDARD) {
-    this->declare_parameter("buttons.hmi_1", std::vector<std::string>({"Select", "", ""}));
-    this->declare_parameter("buttons.hmi_2", std::vector<std::string>({"Home", "", ""}));
-    this->declare_parameter("buttons.hmi_3", std::vector<std::string>({"Scroll Up", "", ""}));
-    this->declare_parameter("buttons.hmi_4", std::vector<std::string>({"Scroll Down", "", ""}));
-    this->declare_parameter("menu.entries", std::vector<std::string>());
+    last = Turtlebot4ButtonEnum::CONTROLLER_HOME;
+  } else {
+    last = Turtlebot4ButtonEnum::CREATE3_2;
   }
 
-  turtlebot4_buttons_.push_back(
-    Turtlebot4Button(
-      Turtlebot4ButtonEnum::CREATE3_1,
-      this->get_parameter("buttons.create3_1").as_string_array()));
-  turtlebot4_buttons_.push_back(
-    Turtlebot4Button(
-      Turtlebot4ButtonEnum::CREATE3_POWER,
-      this->get_parameter("buttons.create3_power").as_string_array()));
-  turtlebot4_buttons_.push_back(
-    Turtlebot4Button(
-      Turtlebot4ButtonEnum::CREATE3_2,
-      this->get_parameter("buttons.create3_2").as_string_array()));
-
-  if (model_ == Turtlebot4Model::STANDARD) {
+  // Declare and add buttons
+  for (uint8_t i = Turtlebot4ButtonEnum::CREATE3_1; i <= last; i++) {
+    this->declare_parameter(
+      button_parameters_[static_cast<Turtlebot4ButtonEnum>(i)],
+      std::vector<std::string>());
     turtlebot4_buttons_.push_back(
       Turtlebot4Button(
-        Turtlebot4ButtonEnum::HMI_1,
-        this->get_parameter("buttons.hmi_1").as_string_array()));
-    turtlebot4_buttons_.push_back(
-      Turtlebot4Button(
-        Turtlebot4ButtonEnum::HMI_2,
-        this->get_parameter("buttons.hmi_2").as_string_array()));
-    turtlebot4_buttons_.push_back(
-      Turtlebot4Button(
-        Turtlebot4ButtonEnum::HMI_3,
-        this->get_parameter("buttons.hmi_3").as_string_array()));
-    turtlebot4_buttons_.push_back(
-      Turtlebot4Button(
-        Turtlebot4ButtonEnum::HMI_4,
-        this->get_parameter("buttons.hmi_4").as_string_array()));
-
-    auto entries = this->get_parameter("menu.entries").as_string_array();
-
-    for (auto entry : entries) {
-      turtlebot4_menu_entries_.push_back(Turtlebot4MenuEntry(entry));
-    }
+        static_cast<Turtlebot4ButtonEnum>(i),
+        this->get_parameter(
+          button_parameters_[static_cast<Turtlebot4ButtonEnum>(i)]).as_string_array()));
   }
+
+  this->declare_parameter("menu.entries", std::vector<std::string>());
+  auto entries = this->get_parameter("menu.entries").as_string_array();
+
+  for (auto entry : entries) {
+    turtlebot4_menu_entries_.push_back(Turtlebot4MenuEntry(entry));
+  }
+
+  // Subscriptions
+  battery_sub_ = this->create_subscription<sensor_msgs::msg::BatteryState>(
+    "battery_state",
+    rclcpp::SensorDataQoS(),
+    std::bind(&Turtlebot4::battery_callback, this, std::placeholders::_1));
+
+  wheel_status_sub_ = this->create_subscription<irobot_create_msgs::msg::WheelStatus>(
+    "wheel_status",
+    rclcpp::SensorDataQoS(),
+    std::bind(&Turtlebot4::wheel_status_callback, this, std::placeholders::_1));
+
+  // Publishers
+  ip_pub_ = this->create_publisher<std_msgs::msg::String>(
+    "ip",
+    rclcpp::QoS(rclcpp::KeepLast(10)));
 
   // Create action/service clients
   dock_client_ = std::make_unique<Turtlebot4Action<Dock>>(node_handle_, "dock");
@@ -337,27 +330,6 @@ void Turtlebot4::wheel_status_callback(
     } else {
       leds_->set_led(MOTORS, OFF);
     }
-  }
-}
-
-void Turtlebot4::joy_callback(
-  const sensor_msgs::msg::Joy::SharedPtr joy_msg)
-{
-  static std::chrono::time_point<std::chrono::steady_clock> last_msg_time_;
-
-  if (std::chrono::steady_clock::now() - last_msg_time_ > std::chrono::milliseconds(200)) {
-    if (joy_msg->axes[6] == 1.0f) {
-      back_function_callback();
-    } else if (joy_msg->axes[6] == -1.0f) {
-      select_function_callback();
-    } else if (joy_msg->axes[7] == 1.0f) {
-      scroll_up_function_callback();
-    } else if (joy_msg->axes[7] == -1.0f) {
-      scroll_down_function_callback();
-    } else {
-      return;
-    }
-    last_msg_time_ = std::chrono::steady_clock::now();
   }
 }
 

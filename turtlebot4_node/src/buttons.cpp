@@ -44,6 +44,10 @@ Buttons::Buttons(
       "hmi/buttons",
       rclcpp::SensorDataQoS(),
       std::bind(&Buttons::hmi_buttons_callback, this, std::placeholders::_1));
+    joy_sub_ = nh_->create_subscription<sensor_msgs::msg::Joy>(
+      "joy",
+      rclcpp::QoS(10),
+      std::bind(&Buttons::joy_callback, this, std::placeholders::_1));
   }
 }
 
@@ -79,4 +83,28 @@ void Buttons::create3_buttons_callback(
   buttons_.at(CREATE3_2).set_state(
     static_cast<Turtlebot4ButtonState>(create3_buttons_msg->button_2.
     is_pressed));
+}
+
+void Buttons::joy_callback(const sensor_msgs::msg::Joy::SharedPtr joy_msg)
+{
+  buttons_.at(CONTROLLER_A).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->buttons[0]));
+  buttons_.at(CONTROLLER_B).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->buttons[1]));
+  buttons_.at(CONTROLLER_X).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->buttons[2]));
+  buttons_.at(CONTROLLER_Y).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->buttons[3]));
+
+  buttons_.at(CONTROLLER_UP).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->axes[7] == 1.0f));
+  buttons_.at(CONTROLLER_DOWN).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->axes[7] == -1.0f));
+  buttons_.at(CONTROLLER_LEFT).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->axes[6] == 1.0f));
+  buttons_.at(CONTROLLER_RIGHT).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->axes[6] == -1.0f));
+
+  buttons_.at(CONTROLLER_L1).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->buttons[4]));
+  buttons_.at(CONTROLLER_L2).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->buttons[6]));
+  buttons_.at(CONTROLLER_L3).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->buttons[11]));
+  buttons_.at(CONTROLLER_R1).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->buttons[5]));
+  buttons_.at(CONTROLLER_R2).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->buttons[7]));
+  buttons_.at(CONTROLLER_R3).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->buttons[12]));
+
+  buttons_.at(CONTROLLER_SHARE).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->buttons[8]));
+  buttons_.at(CONTROLLER_OPTIONS).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->buttons[9]));
+  buttons_.at(CONTROLLER_HOME).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->buttons[10]));
 }
