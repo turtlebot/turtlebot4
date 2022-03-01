@@ -62,7 +62,8 @@ install(TARGETS ${EXECUTABLE_NAME}
 )
 
 install(
-  DIRECTORY include
+  DIRECTORY include/
+  DESTINATION include
 )
 
 if(BUILD_TESTING)
