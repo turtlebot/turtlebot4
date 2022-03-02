@@ -22,8 +22,7 @@ from launch.actions import (DeclareLaunchArgument, GroupAction,
 from launch.conditions import IfCondition, LaunchConfigurationEquals
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
-from launch_ros.actions import PushRosNamespace
-from launch_ros.actions import Node
+from launch_ros.actions import Node, PushRosNamespace
 from nav2_common.launch import RewrittenYaml
 
 
@@ -35,7 +34,6 @@ def generate_launch_description():
     # Create the launch configuration variables
     namespace = LaunchConfiguration('namespace')
     use_namespace = LaunchConfiguration('use_namespace')
-    slam = LaunchConfiguration('slam')
     localization = LaunchConfiguration('localization')
     nav2 = LaunchConfiguration('nav2')
     map_yaml_file = LaunchConfiguration('map')
