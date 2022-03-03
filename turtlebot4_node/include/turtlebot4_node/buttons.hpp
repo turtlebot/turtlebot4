@@ -21,6 +21,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/int32.hpp>
+#include <sensor_msgs/msg/joy.hpp>
 
 #include <string>
 #include <vector>
@@ -34,7 +35,7 @@
 namespace turtlebot4
 {
 
-enum Turtlebot4ButtonEnum
+enum Turtlebot4ButtonEnum: uint8_t
 {
   CREATE3_1,
   CREATE3_POWER,
@@ -43,6 +44,23 @@ enum Turtlebot4ButtonEnum
   HMI_2,
   HMI_3,
   HMI_4,
+  CONTROLLER_A,
+  CONTROLLER_B,
+  CONTROLLER_X,
+  CONTROLLER_Y,
+  CONTROLLER_UP,
+  CONTROLLER_DOWN,
+  CONTROLLER_LEFT,
+  CONTROLLER_RIGHT,
+  CONTROLLER_L1,
+  CONTROLLER_L2,
+  CONTROLLER_L3,
+  CONTROLLER_R1,
+  CONTROLLER_R2,
+  CONTROLLER_R3,
+  CONTROLLER_SHARE,
+  CONTROLLER_OPTIONS,
+  CONTROLLER_HOME,
 };
 
 enum Turtlebot4ButtonState
@@ -72,9 +90,18 @@ struct Turtlebot4Button
     current_state_(RELEASED),
     next_state_(RELEASED)
   {
-    short_function_ = params.at(0);
-    long_function_ = params.at(1);
-    long_press_duration_ms_ = params.at(2).empty() ? 0 : std::stoi(params.at(2));
+    // Short press function only
+    if (params.size() == 1)
+    {
+      short_function_ = params.at(0);
+    }
+    // Short press, Long press, and Long press duration
+    else if (params.size() == 3)
+    {
+      short_function_ = params.at(0);
+      long_function_ = params.at(1);
+      long_press_duration_ms_ = params.at(2).empty() ? 0 : std::stoi(params.at(2));
+    }
   }
 
   void set_state(Turtlebot4ButtonState state)
@@ -160,6 +187,7 @@ private:
   void create3_buttons_callback(
     const irobot_create_msgs::msg::InterfaceButtons::SharedPtr create3_buttons_msg);
   void hmi_buttons_callback(const turtlebot4_msgs::msg::UserButton::SharedPtr hmi_buttons_msg);
+  void joy_callback(const sensor_msgs::msg::Joy::SharedPtr joy_msg);
   
   Turtlebot4Model model_;
 
@@ -168,6 +196,7 @@ private:
   std::shared_ptr<rclcpp::Node> nh_;
   rclcpp::Subscription<irobot_create_msgs::msg::InterfaceButtons>::SharedPtr create3_buttons_sub_;
   rclcpp::Subscription<turtlebot4_msgs::msg::UserButton>::SharedPtr hmi_buttons_sub_;
+  rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_sub_;
 };
 
 }  // namespace turtlebot4

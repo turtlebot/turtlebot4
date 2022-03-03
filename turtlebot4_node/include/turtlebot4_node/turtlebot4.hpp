@@ -76,6 +76,8 @@ private:
   void battery_callback(const sensor_msgs::msg::BatteryState::SharedPtr battery_state_msg);
   void wheel_status_callback(
     const irobot_create_msgs::msg::WheelStatus::SharedPtr wheel_status_msg);
+  void joy_callback(
+    const sensor_msgs::msg::Joy::SharedPtr joy_msg);
 
   // Function callbacks
   void dock_function_callback();
@@ -120,6 +122,7 @@ private:
   std::vector<Turtlebot4Button> turtlebot4_buttons_;
   std::vector<Turtlebot4MenuEntry> turtlebot4_menu_entries_;
   std::map<std::string, turtlebot4_function_callback_t> function_callbacks_;
+  std::map<Turtlebot4ButtonEnum, std::string> button_parameters_;
 
   // Display
   std::unique_ptr<Display> display_;
