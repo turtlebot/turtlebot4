@@ -89,8 +89,8 @@ void Buttons::joy_callback(const sensor_msgs::msg::Joy::SharedPtr joy_msg)
 {
   buttons_.at(CONTROLLER_A).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->buttons[0]));
   buttons_.at(CONTROLLER_B).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->buttons[1]));
-  buttons_.at(CONTROLLER_X).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->buttons[2]));
-  buttons_.at(CONTROLLER_Y).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->buttons[3]));
+  buttons_.at(CONTROLLER_X).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->buttons[3]));
+  buttons_.at(CONTROLLER_Y).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->buttons[2]));
 
   buttons_.at(CONTROLLER_UP).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->axes[7] == 1.0f));
   buttons_.at(CONTROLLER_DOWN).set_state(static_cast<Turtlebot4ButtonState>(joy_msg->axes[7] == -1.0f));
