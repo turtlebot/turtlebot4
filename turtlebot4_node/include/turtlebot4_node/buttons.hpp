@@ -40,10 +40,6 @@ enum Turtlebot4ButtonEnum: uint8_t
   CREATE3_1,
   CREATE3_POWER,
   CREATE3_2,
-  HMI_1,
-  HMI_2,
-  HMI_3,
-  HMI_4,
   CONTROLLER_A,
   CONTROLLER_B,
   CONTROLLER_X,
@@ -61,6 +57,10 @@ enum Turtlebot4ButtonEnum: uint8_t
   CONTROLLER_SHARE,
   CONTROLLER_OPTIONS,
   CONTROLLER_HOME,
+  HMI_1,
+  HMI_2,
+  HMI_3,
+  HMI_4,
 };
 
 enum Turtlebot4ButtonState
@@ -72,8 +72,6 @@ enum Turtlebot4ButtonState
 
 struct Turtlebot4Button
 {
-  Turtlebot4ButtonEnum button_;
-
   std::string short_function_;
   std::string long_function_;
   turtlebot4_function_callback_t short_cb_;
@@ -85,9 +83,8 @@ struct Turtlebot4Button
   Turtlebot4ButtonState current_state_;
   Turtlebot4ButtonState next_state_;
 
-  Turtlebot4Button(Turtlebot4ButtonEnum button, std::vector<std::string> params)
-  : button_(button),
-    current_state_(RELEASED),
+  Turtlebot4Button(std::vector<std::string> params)
+  : current_state_(RELEASED),
     next_state_(RELEASED)
   {
     // Short press function only

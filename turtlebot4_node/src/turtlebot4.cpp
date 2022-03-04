@@ -77,10 +77,6 @@ Turtlebot4::Turtlebot4()
     {CREATE3_1, "buttons.create3_1"},
     {CREATE3_POWER, "buttons.create3_power"},
     {CREATE3_2, "buttons.create3_2"},
-    {HMI_1, "buttons.hmi_1"},
-    {HMI_2, "buttons.hmi_2"},
-    {HMI_3, "buttons.hmi_3"},
-    {HMI_4, "buttons.hmi_4"},
     {CONTROLLER_A, "controller.a"},
     {CONTROLLER_B, "controller.b"},
     {CONTROLLER_X, "controller.x"},
@@ -98,14 +94,18 @@ Turtlebot4::Turtlebot4()
     {CONTROLLER_SHARE, "controller.share"},
     {CONTROLLER_OPTIONS, "controller.options"},
     {CONTROLLER_HOME, "controller.home"},
+    {HMI_1, "buttons.hmi_1"},
+    {HMI_2, "buttons.hmi_2"},
+    {HMI_3, "buttons.hmi_3"},
+    {HMI_4, "buttons.hmi_4"},
   };
 
   Turtlebot4ButtonEnum last;
 
   if (model_ == Turtlebot4Model::STANDARD) {
-    last = Turtlebot4ButtonEnum::CONTROLLER_HOME;
+    last = Turtlebot4ButtonEnum::HMI_4;
   } else {
-    last = Turtlebot4ButtonEnum::CREATE3_2;
+    last = Turtlebot4ButtonEnum::CONTROLLER_HOME;
   }
 
   // Declare and add buttons
@@ -115,7 +115,6 @@ Turtlebot4::Turtlebot4()
       std::vector<std::string>());
     turtlebot4_buttons_.push_back(
       Turtlebot4Button(
-        static_cast<Turtlebot4ButtonEnum>(i),
         this->get_parameter(
           button_parameters_[static_cast<Turtlebot4ButtonEnum>(i)]).as_string_array()));
   }

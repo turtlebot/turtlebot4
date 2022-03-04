@@ -39,15 +39,16 @@ Buttons::Buttons(
     rclcpp::SensorDataQoS(),
     std::bind(&Buttons::create3_buttons_callback, this, std::placeholders::_1));
 
+  joy_sub_ = nh_->create_subscription<sensor_msgs::msg::Joy>(
+      "joy",
+      rclcpp::QoS(10),
+      std::bind(&Buttons::joy_callback, this, std::placeholders::_1));
+
   if (model_ == Turtlebot4Model::STANDARD) {
     hmi_buttons_sub_ = nh_->create_subscription<turtlebot4_msgs::msg::UserButton>(
       "hmi/buttons",
       rclcpp::SensorDataQoS(),
       std::bind(&Buttons::hmi_buttons_callback, this, std::placeholders::_1));
-    joy_sub_ = nh_->create_subscription<sensor_msgs::msg::Joy>(
-      "joy",
-      rclcpp::QoS(10),
-      std::bind(&Buttons::joy_callback, this, std::placeholders::_1));
   }
 }
 
