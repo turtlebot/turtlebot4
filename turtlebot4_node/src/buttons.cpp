@@ -67,7 +67,7 @@ void Buttons::hmi_buttons_callback(
   const turtlebot4_msgs::msg::UserButton::SharedPtr hmi_buttons_msg)
 {
   for (uint8_t i = 0; i < HMI_BUTTON_COUNT; i++) {
-    buttons_.at(CREATE3_BUTTON_COUNT + i).set_state(
+    buttons_.at(HMI_1 + i).set_state(
       static_cast<Turtlebot4ButtonState>(hmi_buttons_msg->button[i]));
   }
 }
