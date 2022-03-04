@@ -92,6 +92,11 @@ struct Turtlebot4Button
     {
       short_function_ = params.at(0);
     }
+    else if (params.size() == 2)
+    {
+      long_function_ = params.at(0);
+      long_press_duration_ms_ = params.at(1).empty() ? 0 : std::stoi(params.at(1));
+    }
     // Short press, Long press, and Long press duration
     else if (params.size() == 3)
     {
