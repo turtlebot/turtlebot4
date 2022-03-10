@@ -46,7 +46,7 @@ Turtlebot4::Turtlebot4()
 : Node("turtlebot4_node",
     rclcpp::NodeOptions().use_intra_process_comms(true)),
   wheels_enabled_(true),
-  comms_timeout_ms_(15000)
+  comms_timeout_ms_(30000)
 {
   RCLCPP_INFO(get_logger(), "Init Turtlebot4 Node Main");
 
