@@ -30,8 +30,11 @@
     <origin xyz="${camera_mount_x_offset} ${camera_mount_y_offset} ${camera_mount_z_offset + base_link_z_offset}"/>
   </xacro:camera_bracket>
 
-  <xacro:oakd_lite name="oakd_lite" parent_link="oakd_lite_camera_bracket">
-    <origin xyz="${oakd_lite_x_offset} ${oakd_lite_y_offset} ${oakd_lite_z_offset}"/>
+  <xacro:oakd_lite name="oakd_lite" parent_link="oakd_lite_camera_bracket" 
+                   cam_pos_x="${oakd_lite_x_offset}"
+                   cam_pos_y="${oakd_lite_y_offset}"
+                   cam_pos_z="${oakd_lite_z_offset}"
+                   cam_roll="0.0" cam_pitch="0.0" cam_yaw="0.0">
   </xacro:oakd_lite>
 
 </robot>
