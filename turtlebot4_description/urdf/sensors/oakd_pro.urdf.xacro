@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 
-<xacro:macro name="oakd_pro" params="name parent_link *origin">
+<xacro:macro name="oakd_pro" params="name parent_link cam_pos_x cam_pos_y cam_pos_z cam_roll cam_pitch cam_yaw">
   <xacro:include filename="$(find irobot_create_description)/urdf/common_properties.urdf.xacro"/>
+  <xacro:include filename="$(find depthai_bridge)/urdf/include/depthai_macro.urdf.xacro"/>
 
   <xacro:property name="mass"       value="0.061"/>
 
@@ -14,30 +15,13 @@
   <xacro:property name="collision_offset_y"   value="${0*cm2m}" />
   <xacro:property name="collision_offset_z"   value="${-0.5*cm2m}" />
 
-  <joint name="${name}_joint" type="fixed">
-    <parent link="${parent_link}"/>
-    <child link="${name}_link"/>
-    <xacro:insert_block name="origin"/>
-  </joint>
+  <xacro:property name="camera_model"  value="OAK-D-PRO" />
+  <xacro:property name="base_frame"    value="${name}_link" />  
 
-  <link name="${name}_link">
-    <visual>
-      <geometry>
-        <mesh filename="file://$(find turtlebot4_description)/meshes/OAK-D-Pro.STL" scale="0.001 0.001 0.001" />
-      </geometry>
-    </visual>
-    <collision>
-      <origin xyz="${collision_offset_x} ${collision_offset_y} ${collision_offset_z}"/>
-      <geometry>
-        <box size="${collision_length_x} ${collision_length_y} ${collision_length_z}"/>
-      </geometry>
-    </collision>
-    <inertial>
-      <mass value="${mass}"/>
-      <inertia ixx="0.00000202475" ixy="0.0" ixz="0.0"
-	             iyy="0.00001527320" iyz="0.0" izz="0.00001605536" />
-    </inertial>
-  </link>
+  <xacro:depthai_camera camera_name="${name}" parent="${parent_link}" 
+                        camera_model="${camera_model}" base_frame="${base_frame}"
+                        cam_pos_x="${cam_pos_x}" cam_pos_y="${cam_pos_y}" cam_pos_z="${cam_pos_z}"
+                        cam_roll="${cam_roll}" cam_pitch="${cam_pitch}" cam_yaw="${cam_yaw}"/>
 
   <gazebo reference="${name}_link">
     <sensor name="rgbd_camera" type="rgbd_camera">

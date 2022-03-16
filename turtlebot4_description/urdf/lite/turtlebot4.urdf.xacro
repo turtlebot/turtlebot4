@@ -34,7 +34,5 @@
                    cam_pos_x="${oakd_lite_x_offset}"
                    cam_pos_y="${oakd_lite_y_offset}"
                    cam_pos_z="${oakd_lite_z_offset}"
-                   cam_roll="0.0" cam_pitch="0.0" cam_yaw="0.0">
-  </xacro:oakd_lite>
-
+                   cam_roll="0.0" cam_pitch="0.0" cam_yaw="0.0"/>
 </robot>
