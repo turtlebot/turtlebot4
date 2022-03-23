@@ -3,7 +3,7 @@
   <!-- Base create3 model -->
   <xacro:include filename="$(find irobot_create_description)/urdf/create3.urdf.xacro" />
   <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/rplidar.urdf.xacro" />
-  <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/oakd_lite.urdf.xacro" />
+  <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/oakd.urdf.xacro" />
   <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/camera_bracket.urdf.xacro" />
 
   <!-- Mechanical properties -->
@@ -15,7 +15,7 @@
   <xacro:property name="camera_mount_y_offset"         value="${0*cm2m}"/>
   <xacro:property name="camera_mount_z_offset"         value="${2.914772*cm2m}"/>
 
-  <xacro:property name="oakd_lite_x_offset"             value="${5.1*cm2m}"/>
+  <xacro:property name="oakd_lite_x_offset"             value="${5.294026*cm2m}"/>
   <xacro:property name="oakd_lite_y_offset"             value="${0*cm2m}"/>
   <xacro:property name="oakd_lite_z_offset"             value="${9.25385*cm2m}"/>
 
@@ -30,9 +30,7 @@
     <origin xyz="${camera_mount_x_offset} ${camera_mount_y_offset} ${camera_mount_z_offset + base_link_z_offset}"/>
   </xacro:camera_bracket>
 
-  <xacro:oakd_lite name="oakd_lite" parent_link="oakd_lite_camera_bracket" 
-                   cam_pos_x="${oakd_lite_x_offset}"
-                   cam_pos_y="${oakd_lite_y_offset}"
-                   cam_pos_z="${oakd_lite_z_offset}"
-                   cam_roll="0.0" cam_pitch="0.0" cam_yaw="0.0"/>
+  <xacro:oakd name="oakd_lite" parent_link="oakd_lite_camera_bracket">
+    <origin xyz="${oakd_lite_x_offset} ${oakd_lite_y_offset} ${oakd_lite_z_offset}"/>
+  </xacro:oakd>
 </robot>
