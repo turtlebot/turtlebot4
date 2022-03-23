@@ -23,7 +23,7 @@
                         cam_pos_x="${cam_pos_x}" cam_pos_y="${cam_pos_y}" cam_pos_z="${cam_pos_z}"
                         cam_roll="${cam_roll}" cam_pitch="${cam_pitch}" cam_yaw="${cam_yaw}"/>
 
-  <gazebo reference="${name}_link">
+  <gazebo reference="${name}_rgb_camera_optical_frame">
     <sensor name="rgbd_camera" type="rgbd_camera">
       <camera>
         <horizontal_fov>1.25</horizontal_fov>
@@ -43,7 +43,7 @@
     <xacro:material_darkgray/>
   </gazebo>
 
-  <gazebo reference="${name}_joint">
+  <gazebo reference="${name}_center_joint">
     <preserveFixedJoint>true</preserveFixedJoint>
   </gazebo>
 
