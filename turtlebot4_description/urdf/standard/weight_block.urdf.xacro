@@ -19,7 +19,7 @@
   <link name="${link_name}">
     <visual>
       <geometry>
-       <mesh filename="file://$(find turtlebot4_description)/meshes/weight_block.STL" scale="0.001 0.001 0.001" />
+       <mesh filename="package://turtlebot4_description/meshes/weight_block.dae" scale="1 1 1" />
       </geometry>
     </visual>
     <inertial>

@@ -22,7 +22,7 @@
   <link name="${name}_link">
     <visual>
       <geometry>
-        <mesh filename="file://$(find turtlebot4_description)/meshes/rplidar.STL" scale="0.001 0.001 0.001" />
+        <mesh filename="package://turtlebot4_description/meshes/rplidar.dae" scale="1 1 1" />
       </geometry>
     </visual>
     <collision>

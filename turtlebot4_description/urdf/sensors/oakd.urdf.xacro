@@ -1,0 +1,176 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+<xacro:macro name="oakd" params="name parent_link *origin">
+  <xacro:include filename="$(find irobot_create_description)/urdf/common_properties.urdf.xacro"/>
+
+  <xacro:property name="mass"       value="0.061"/>
+  <xacro:property name="baseline" value="0.075" />
+  <xacro:property name="M_PI"     value="3.1415926535897931" />
+
+  <xacro:property name="collision_length_x"   value="${2.25*cm2m}" />
+  <xacro:property name="collision_length_y"   value="${9.7*cm2m}" />
+  <xacro:property name="collision_length_z"   value="${3*cm2m}" />
+
+  <xacro:property name="collision_offset_x"   value="${-1.1*cm2m}" />
+  <xacro:property name="collision_offset_y"   value="${0*cm2m}" />
+  <xacro:property name="collision_offset_z"   value="${-0.5*cm2m}" />
+
+  <xacro:property name="base_frame" value="${name}_link"/>
+
+  <!-- Base frame -->
+  <joint name="${name}_joint" type="fixed">
+    <parent link="${parent_link}"/>
+    <child link="${base_frame}"/>
+    <xacro:insert_block name="origin"/>
+  </joint>
+
+  <link name="${base_frame}">
+    <visual>
+      <geometry>
+        <mesh filename="package://turtlebot4_description/meshes/${name}.dae" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="${collision_offset_x} ${collision_offset_y} ${collision_offset_z}"/>
+      <geometry>
+        <box size="${collision_length_x} ${collision_length_y} ${collision_length_z}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="${mass}"/>
+      <inertia ixx="0.00000202475" ixy="0.0" ixz="0.0"
+	             iyy="0.00001527320" iyz="0.0" izz="0.00001605536" />
+    </inertial>
+  </link>
+
+  <!-- RGB Camera -->
+  <link name="${name}_rgb_camera_frame">
+    <xacro:inertial_dummy/>
+  </link>
+    
+  <joint name="${name}_rgb_camera_joint" type="fixed">
+      <parent link="${base_frame}"/>
+      <child link="${name}_rgb_camera_frame"/>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+  </joint>
+
+  <link name="${name}_rgb_camera_optical_frame">
+    <xacro:inertial_dummy/>
+  </link>
+    
+  <joint name="${name}_rgb_camera_optical_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="-${M_PI/2} 0.0 -${M_PI/2}"/>
+      <parent link="${name}_rgb_camera_frame"/>
+      <child link="${name}_rgb_camera_optical_frame"/>
+  </joint>
+
+  <!-- Left Camera -->
+  <link name="${name}_left_camera_frame">
+    <xacro:inertial_dummy/>
+  </link>
+    
+  <joint name="${name}_left_camera_joint" type="fixed">
+      <parent link="${base_frame}"/>
+      <child link="${name}_left_camera_frame"/>
+      <origin xyz="0 ${baseline/2} 0" rpy="0 0 0" />
+  </joint>
+
+  <link name="${name}_left_camera_optical_frame">
+    <xacro:inertial_dummy/>
+  </link>
+  
+  <joint name="${name}_left_camera_optical_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="-${M_PI/2} 0.0 -${M_PI/2}"/>
+      <parent link="${name}_left_camera_frame"/>
+      <child link="${name}_left_camera_optical_frame"/>
+  </joint>
+
+  
+  <!-- Right Camera -->
+  <link name="${name}_right_camera_frame">
+    <xacro:inertial_dummy/>
+  </link>
+  
+  <joint name="${name}_right_camera_joint" type="fixed">
+      <parent link="${base_frame}"/>
+      <child link="${name}_right_camera_frame"/>
+      <origin xyz="0 -${baseline/2} 0" rpy="0 0 0" />
+  </joint>
+
+  <link name="${name}_right_camera_optical_frame">
+    <xacro:inertial_dummy/>
+  </link>
+  
+  <joint name="${name}_right_camera_optical_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="-${M_PI/2} 0.0 -${M_PI/2}"/>
+      <parent link="${name}_right_camera_frame"/>
+      <child link="${name}_right_camera_optical_frame"/>
+  </joint>
+
+  <!-- IMU -->
+  <link name="${name}_imu_frame">
+    <xacro:inertial_dummy/>
+  </link>
+
+  <joint name="${name}_imu_joint" type="fixed">
+      <parent link="${base_frame}"/>
+      <child link="${name}_imu_frame"/>
+      <origin xyz="0 0 0" rpy="-${M_PI/2} 0 -${M_PI/2}" />
+  </joint>
+
+  <!-- Gazebo links and joints -->
+  <gazebo reference="${name}_rgb_camera_frame">
+    <sensor name="rgbd_camera" type="rgbd_camera">
+      <camera>
+        <horizontal_fov>1.25</horizontal_fov>
+        <image>
+          <width>320</width>
+          <height>240</height>
+        </image>
+        <clip>
+          <near>0.3</near>
+          <far>100</far>
+        </clip>
+      </camera>
+      <always_on>1</always_on>
+      <update_rate>30</update_rate>
+      <visualize>true</visualize>
+    </sensor>
+    <xacro:material_darkgray/>
+  </gazebo>
+
+  <gazebo reference="${name}_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="${name}_rgb_camera_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="${name}_rgb_camera_optical_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="${name}_left_camera_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="${name}_left_camera_optical_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="${name}_right_camera_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="${name}_right_camera_optical_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="${name}_imu_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+</xacro:macro>
+</robot>

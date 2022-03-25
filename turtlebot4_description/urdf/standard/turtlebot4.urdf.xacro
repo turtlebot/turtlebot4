@@ -3,7 +3,7 @@
   <!-- Base create3 model -->
   <xacro:include filename="$(find irobot_create_description)/urdf/create3.urdf.xacro" />
   <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/rplidar.urdf.xacro" />
-  <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/oakd_pro.urdf.xacro" />
+  <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/oakd.urdf.xacro" />
   <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/camera_bracket.urdf.xacro" />
   <xacro:include filename="$(find turtlebot4_description)/urdf/standard/tower_standoff.urdf.xacro" />
   <xacro:include filename="$(find turtlebot4_description)/urdf/standard/tower_sensor_plate.urdf.xacro" />
@@ -51,12 +51,12 @@
     <visual>
       <origin xyz="0 0 0" rpy="${pi/2} 0 ${pi/2}"/>
       <geometry>
-        <mesh filename="file://$(find turtlebot4_description)/meshes/shell.STL" scale="0.001 0.001 0.001" />
+        <mesh filename="package://turtlebot4_description/meshes/shell.dae" scale="1 1 1" />
       </geometry>
     </visual>
     <collision name="shell_collision">
       <geometry>
-        <mesh filename="file://$(find turtlebot4_description)/meshes/shell_collision.STL" scale="0.001 0.001 0.001" />
+        <mesh filename="package://turtlebot4_description/meshes/shell_collision.dae" scale="1 1 1" />
       </geometry>
     </collision>
     <inertial>
@@ -120,7 +120,8 @@
     <origin xyz="${camera_mount_x_offset} ${camera_mount_y_offset} ${camera_mount_z_offset}"/>
   </xacro:camera_bracket>
 
-  <xacro:oakd_pro name="oakd_pro" parent_link="oakd_pro_camera_bracket">
+  <xacro:oakd name="oakd_pro" parent_link="oakd_pro_camera_bracket">
     <origin xyz="${oakd_pro_x_offset} ${oakd_pro_y_offset} ${oakd_pro_z_offset}"/>
-  </xacro:oakd_pro>
+  </xacro:oakd>
+
 </robot>

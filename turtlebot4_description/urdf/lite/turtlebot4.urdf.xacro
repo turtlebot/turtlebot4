@@ -3,7 +3,7 @@
   <!-- Base create3 model -->
   <xacro:include filename="$(find irobot_create_description)/urdf/create3.urdf.xacro" />
   <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/rplidar.urdf.xacro" />
-  <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/oakd_lite.urdf.xacro" />
+  <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/oakd.urdf.xacro" />
   <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/camera_bracket.urdf.xacro" />
 
   <!-- Mechanical properties -->
@@ -30,8 +30,7 @@
     <origin xyz="${camera_mount_x_offset} ${camera_mount_y_offset} ${camera_mount_z_offset + base_link_z_offset}"/>
   </xacro:camera_bracket>
 
-  <xacro:oakd_lite name="oakd_lite" parent_link="oakd_lite_camera_bracket">
+  <xacro:oakd name="oakd_lite" parent_link="oakd_lite_camera_bracket">
     <origin xyz="${oakd_lite_x_offset} ${oakd_lite_y_offset} ${oakd_lite_z_offset}"/>
-  </xacro:oakd_lite>
-
+  </xacro:oakd>
 </robot>

@@ -20,7 +20,7 @@
     <visual>
       <origin rpy="0 ${pi/2} 0"/>
       <geometry>
-       <mesh filename="file://$(find turtlebot4_description)/meshes/tower_standoff.STL" scale="0.001 0.001 0.001" />
+       <mesh filename="package://turtlebot4_description/meshes/tower_standoff.dae" scale="1 1 1" />
       </geometry>
     </visual>
     <collision>
