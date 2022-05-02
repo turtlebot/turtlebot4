@@ -165,7 +165,6 @@ private:
 
   // Publishers
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr ip_pub_;
-  rclcpp::Publisher<irobot_create_msgs::msg::LightringLeds>::SharedPtr lightring_pub_;
 
   // Store current wheels state
   bool wheels_enabled_;

@@ -143,10 +143,6 @@ Turtlebot4::Turtlebot4()
     "ip",
     rclcpp::QoS(rclcpp::KeepLast(10)));
 
-  lightring_pub_ = this->create_publisher<irobot_create_msgs::msg::LightringLeds>(
-    "cmd_lightring",
-    rclcpp::SensorDataQoS());
-
   // Create action/service clients
   dock_client_ = std::make_unique<Turtlebot4Action<Dock>>(node_handle_, "dock");
   undock_client_ = std::make_unique<Turtlebot4Action<Undock>>(node_handle_, "undock");
@@ -349,7 +345,7 @@ void Turtlebot4::battery_callback(const sensor_msgs::msg::BatteryState::SharedPt
       leds_->set_led(BATTERY, GREEN);
     } else if (battery_state_msg->percentage > 0.2) {
       leds_->set_led(BATTERY, YELLOW);
-    } else if (battery_state_msg->percentage > 0.1) {
+    } else if (battery_state_msg->percentage > 0.12) {
       leds_->set_led(BATTERY, RED);
     } else {
       leds_->blink(BATTERY, 200, 0.5, RED);
