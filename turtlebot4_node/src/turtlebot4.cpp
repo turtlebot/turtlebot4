@@ -36,6 +36,7 @@ using turtlebot4::Turtlebot4;
 using Dock = irobot_create_msgs::action::DockServo;
 using Undock = irobot_create_msgs::action::Undock;
 using WallFollow = irobot_create_msgs::action::WallFollow;
+using LedAnimation = irobot_create_msgs::action::LedAnimation;
 using EStop = irobot_create_msgs::srv::EStop;
 using Power = irobot_create_msgs::srv::RobotPower;
 
@@ -142,10 +143,15 @@ Turtlebot4::Turtlebot4()
     "ip",
     rclcpp::QoS(rclcpp::KeepLast(10)));
 
+  lightring_pub_ = this->create_publisher<irobot_create_msgs::msg::LightringLeds>(
+    "cmd_lightring",
+    rclcpp::SensorDataQoS());
+
   // Create action/service clients
   dock_client_ = std::make_unique<Turtlebot4Action<Dock>>(node_handle_, "dock");
   undock_client_ = std::make_unique<Turtlebot4Action<Undock>>(node_handle_, "undock");
   wall_follow_client_ = std::make_unique<Turtlebot4Action<WallFollow>>(node_handle_, "wall_follow");
+  led_animation_client_ = std::make_unique<Turtlebot4Action<LedAnimation>>(node_handle_, "led_animation");
   estop_client_ = std::make_unique<Turtlebot4Service<EStop>>(node_handle_, "e_stop");
   power_client_ = std::make_unique<Turtlebot4Service<Power>>(node_handle_, "robot_power");
 
@@ -291,11 +297,45 @@ void Turtlebot4::comms_timer(const std::chrono::milliseconds timeout)
 }
 
 /**
+ * @brief Creates and runs timer for powering off the robot when low battery
+ * @input timeout - Sets timer period in milliseconds
+ */
+void Turtlebot4::power_off_timer(const std::chrono::milliseconds timeout)
+{
+  power_off_timer_ = this->create_wall_timer(
+    timeout,
+    [this]() -> void
+    {
+      RCLCPP_INFO(this->get_logger(), "Powering off");
+      power_function_callback();
+    });
+}
+
+/**
  * @brief Battery subscription callback
  * @input battery_state_msg - Received message on battery topic
  */
 void Turtlebot4::battery_callback(const sensor_msgs::msg::BatteryState::SharedPtr battery_state_msg)
 {
+  if (battery_state_msg->percentage <= 0.12) {
+    // Discharging
+    if (battery_state_msg->current < 0.0) {
+      // Wait 60s before powering off
+      if (power_off_timer_ == nullptr || power_off_timer_->is_canceled()) {
+        RCLCPP_WARN(this->get_logger(), "Low battery, starting power off timer");
+        power_off_timer(std::chrono::milliseconds(60000));
+      }
+    } else {
+      if (power_off_timer_ != nullptr && !power_off_timer_->is_canceled()) {
+        RCLCPP_INFO(this->get_logger(), "Charging, canceling power off timer");
+        power_off_timer_->cancel();
+      }
+    }
+  } else if (battery_state_msg->percentage <= 0.2) {
+    low_battery_animation();
+  }
+
+  // Set Battery LED on standard robots
   if (model_ == Turtlebot4Model::STANDARD) {
     display_->set_battery(battery_state_msg);
 
@@ -309,7 +349,7 @@ void Turtlebot4::battery_callback(const sensor_msgs::msg::BatteryState::SharedPt
       leds_->set_led(BATTERY, GREEN);
     } else if (battery_state_msg->percentage > 0.2) {
       leds_->set_led(BATTERY, YELLOW);
-    } else if (battery_state_msg->percentage > 0.05) {
+    } else if (battery_state_msg->percentage > 0.1) {
       leds_->set_led(BATTERY, RED);
     } else {
       leds_->blink(BATTERY, 200, 0.5, RED);
@@ -329,6 +369,31 @@ void Turtlebot4::wheel_status_callback(
     } else {
       leds_->set_led(MOTORS, OFF);
     }
+  }
+}
+
+/**
+ * @brief Sends lightring action goal
+ */
+void Turtlebot4::low_battery_animation()
+{
+  if (led_animation_client_ != nullptr) {
+    auto animation_msg = std::make_shared<LedAnimation::Goal>();
+    auto lightring_msg = irobot_create_msgs::msg::LightringLeds();
+
+    for (int i = 0; i < 6; i++) {
+      lightring_msg.leds[i].red = 255;
+    }
+    lightring_msg.header.stamp = this->get_clock()->now();
+    lightring_msg.override_system = true;
+
+    animation_msg->lightring = lightring_msg;
+    animation_msg->animation_type = animation_msg->BLINK_LIGHTS;
+    animation_msg->max_runtime.sec = 5;
+
+    led_animation_client_->send_goal(animation_msg);
+  } else {
+    RCLCPP_ERROR(this->get_logger(), "LED animation client NULL");
   }
 }
 
