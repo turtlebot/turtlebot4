@@ -41,7 +41,7 @@ struct Turtlebot4Led
   Turtlebot4LedColor current_color_, next_color_, blink_color_;
   rclcpp::Publisher<std_msgs::msg::Int32>::SharedPtr led_pub_;
 
-  Turtlebot4Led(Turtlebot4LedType type)
+  explicit Turtlebot4Led(Turtlebot4LedType type)
   : type_(type),
     on_period_ms_(0),
     off_period_ms_(1000),

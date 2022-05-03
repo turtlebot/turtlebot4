@@ -69,7 +69,7 @@ public:
   using Power = irobot_create_msgs::srv::RobotPower;
 
   // Constructor and Destructor
-  explicit Turtlebot4();
+  Turtlebot4();
   virtual ~Turtlebot4() {}
 
 private:

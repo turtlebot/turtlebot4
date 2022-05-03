@@ -83,23 +83,19 @@ struct Turtlebot4Button
   Turtlebot4ButtonState current_state_;
   Turtlebot4ButtonState next_state_;
 
-  Turtlebot4Button(std::vector<std::string> params)
+  explicit Turtlebot4Button(std::vector<std::string> params)
   : current_state_(RELEASED),
     next_state_(RELEASED)
   {
     // Short press function only
-    if (params.size() == 1)
-    {
+    if (params.size() == 1) {
       short_function_ = params.at(0);
-    }
-    else if (params.size() == 2)
-    {
+    } else if (params.size() == 2) {
+      // Long press and Long press duration
       long_function_ = params.at(0);
       long_press_duration_ms_ = params.at(1).empty() ? 0 : std::stoi(params.at(1));
-    }
-    // Short press, Long press, and Long press duration
-    else if (params.size() == 3)
-    {
+    } else if (params.size() == 3) {
+      // Short press, Long press, and Long press duration
       short_function_ = params.at(0);
       long_function_ = params.at(1);
       long_press_duration_ms_ = params.at(2).empty() ? 0 : std::stoi(params.at(2));
@@ -190,7 +186,7 @@ private:
     const irobot_create_msgs::msg::InterfaceButtons::SharedPtr create3_buttons_msg);
   void hmi_buttons_callback(const turtlebot4_msgs::msg::UserButton::SharedPtr hmi_buttons_msg);
   void joy_callback(const sensor_msgs::msg::Joy::SharedPtr joy_msg);
-  
+
   Turtlebot4Model model_;
 
   std::vector<Turtlebot4Button> buttons_;

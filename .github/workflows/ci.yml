@@ -21,3 +21,4 @@ jobs:
             turtlebot4_description
             turtlebot4_msgs
             turtlebot4_navigation
+            turtlebot4_node

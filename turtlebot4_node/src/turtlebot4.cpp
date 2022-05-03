@@ -56,18 +56,15 @@ Turtlebot4::Turtlebot4()
 
   // ROS parameters
   this->declare_parameter("model", Turtlebot4ModelName[Turtlebot4Model::STANDARD]);
-  if (this->get_parameter("model").as_string() ==
-    Turtlebot4ModelName[Turtlebot4Model::STANDARD])
-  {
+  std::string model = this->get_parameter("model").as_string();
+  if (model == Turtlebot4ModelName[Turtlebot4Model::STANDARD]) {
     model_ = Turtlebot4Model::STANDARD;
-  } else if (this->get_parameter("model").as_string() ==
-    Turtlebot4ModelName[Turtlebot4Model::LITE])
-  {
+  } else if (model == Turtlebot4ModelName[Turtlebot4Model::LITE]) {
     model_ = Turtlebot4Model::LITE;
   } else {
     RCLCPP_ERROR(
       node_handle_->get_logger(), "Invalid Model %s",
-      this->get_parameter("model").as_string().c_str());
+      model.c_str());
     return;
   }
 
@@ -147,7 +144,9 @@ Turtlebot4::Turtlebot4()
   dock_client_ = std::make_unique<Turtlebot4Action<Dock>>(node_handle_, "dock");
   undock_client_ = std::make_unique<Turtlebot4Action<Undock>>(node_handle_, "undock");
   wall_follow_client_ = std::make_unique<Turtlebot4Action<WallFollow>>(node_handle_, "wall_follow");
-  led_animation_client_ = std::make_unique<Turtlebot4Action<LedAnimation>>(node_handle_, "led_animation");
+  led_animation_client_ = std::make_unique<Turtlebot4Action<LedAnimation>>(
+    node_handle_,
+    "led_animation");
   estop_client_ = std::make_unique<Turtlebot4Service<EStop>>(node_handle_, "e_stop");
   power_client_ = std::make_unique<Turtlebot4Service<Power>>(node_handle_, "robot_power");
 
@@ -267,7 +266,7 @@ void Turtlebot4::wifi_timer(const std::chrono::milliseconds timeout)
       if (this->model_ == Turtlebot4Model::STANDARD) {
         display_->set_ip(ip);
 
-        if (ip == UNKNOWN_IP) {
+        if (ip == std::string(UNKNOWN_IP)) {
           leds_->set_led(WIFI, OFF);
         } else {
           leds_->set_led(WIFI, GREEN);
@@ -613,5 +612,5 @@ std::string Turtlebot4::get_ip()
   if (ifAddrStruct != NULL) {
     freeifaddrs(ifAddrStruct);
   }
-  return UNKNOWN_IP;
+  return std::string(UNKNOWN_IP);
 }
