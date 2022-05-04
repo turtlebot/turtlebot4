@@ -38,7 +38,7 @@ Display::Display(
   menu_override_(false),
   scroll_position_(0),
   selected_line_(0),
-  ip_(UNKNOWN_IP),
+  ip_(std::string(UNKNOWN_IP)),
   battery_percentage_(0)
 {
   RCLCPP_INFO(nh_->get_logger(), "Init Display");

@@ -32,7 +32,7 @@ static constexpr auto CREATE3_BUTTON_COUNT = 3;
 static constexpr auto HMI_BUTTON_COUNT = 4;
 static constexpr auto TOTAL_BUTTON_COUNT = 7;
 
-static const std::string UNKNOWN_IP = "UNKNOWN";
+static constexpr auto UNKNOWN_IP = "UNKNOWN";
 
 enum Turtlebot4LedEnum
 {
