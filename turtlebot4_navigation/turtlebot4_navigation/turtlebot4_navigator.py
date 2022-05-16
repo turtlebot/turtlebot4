@@ -16,23 +16,24 @@
 #
 # @author Roni Kreinin (rkreinin@clearpathrobotics.com)
 
-import time
-import math
 
 from enum import IntEnum
-
-from geometry_msgs.msg import PoseStamped
-from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult
-import rclpy
-from rclpy.duration import Duration
-from rclpy.action import ActionClient
-
-from irobot_create_msgs.action import Undock, DockServo
-from irobot_create_msgs.msg import Dock
-
-from rclpy.qos import qos_profile_sensor_data
+import math
+import time
 
 from action_msgs.msg import GoalStatus
+
+from geometry_msgs.msg import PoseStamped
+
+from irobot_create_msgs.action import DockServo, Undock
+from irobot_create_msgs.msg import Dock
+
+from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult
+
+import rclpy
+from rclpy.action import ActionClient
+from rclpy.duration import Duration
+from rclpy.qos import qos_profile_sensor_data
 
 
 class TurtleBot4Directions(IntEnum):
@@ -101,9 +102,7 @@ class TurtleBot4Navigator(BasicNavigator):
         return self.is_docked
 
     def undock(self):
-        """
-        Perform Undock action.
-        """
+        """Perform Undock action."""
         self.info('Undocking...')
         self.undock_send_goal()
 
@@ -148,9 +147,7 @@ class TurtleBot4Navigator(BasicNavigator):
         return True
 
     def dock(self):
-        """
-        Perform Undock action.
-        """
+        """Perform Undock action."""
         self.info('Docking...')
         self.dock_send_goal()
 
