@@ -17,7 +17,6 @@
 # @author Roni Kreinin (rkreinin@clearpathrobotics.com)
 
 
-from copy import deepcopy
 from enum import IntEnum
 import math
 import time
@@ -108,7 +107,7 @@ class TurtleBot4Navigator(BasicNavigator):
 
     def createPath(self):
         """
-        Create a path using the '2D Pose Estimate' tool in Rviz
+        Create a path using the '2D Pose Estimate' tool in Rviz.
 
         :return: List of PoseStamped poses
         """
@@ -117,7 +116,7 @@ class TurtleBot4Navigator(BasicNavigator):
         self.creating_path = True
 
         self.info('Creating a path. Press CTRL+C to finish.')
-        self.info('Use the \'2D Pose Estimate\' tool in Rviz to add a pose to the path.')
+        self.info('Use the "2D Pose Estimate" tool in Rviz to add a pose to the path.')
         try:
             while self.creating_path:
                 while self.new_pose is None:
@@ -132,7 +131,8 @@ class TurtleBot4Navigator(BasicNavigator):
 
         self.info('Path created.')
         for i, p in enumerate(poses):
-            self.info('Pose {0} [x,y]=[{1:.3f},{2:.3f}] [x,y,z,w]=[{3:.3f},{4:.3f},{5:.3f},{6:.3f}]'.format(
+            self.info('Pose {0} [x,y]=[{1:.3f},{2:.3f}] \
+                      [x,y,z,w]=[{3:.3f},{4:.3f},{5:.3f},{6:.3f}]'.format(
                 i, p.pose.position.x, p.pose.position.y, p.pose.orientation.x,
                 p.pose.orientation.y, p.pose.orientation.z, p.pose.orientation.w))
         return poses
