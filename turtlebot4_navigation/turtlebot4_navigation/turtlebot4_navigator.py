@@ -17,13 +17,14 @@
 # @author Roni Kreinin (rkreinin@clearpathrobotics.com)
 
 
+from copy import deepcopy
 from enum import IntEnum
 import math
 import time
 
 from action_msgs.msg import GoalStatus
 
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 
 from irobot_create_msgs.action import DockServo, Undock
 from irobot_create_msgs.msg import Dock
@@ -33,7 +34,7 @@ from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult
 import rclpy
 from rclpy.action import ActionClient
 from rclpy.duration import Duration
-from rclpy.qos import qos_profile_sensor_data
+from rclpy.qos import qos_profile_sensor_data, qos_profile_system_default
 
 
 class TurtleBot4Directions(IntEnum):
@@ -49,6 +50,7 @@ class TurtleBot4Directions(IntEnum):
 
 class TurtleBot4Navigator(BasicNavigator):
     is_docked = None
+    creating_path = False
 
     def __init__(self):
         super().__init__()
@@ -57,6 +59,11 @@ class TurtleBot4Navigator(BasicNavigator):
                                  '/dock',
                                  self._dockCallback,
                                  qos_profile_sensor_data)
+
+        self.create_subscription(PoseWithCovarianceStamped,
+                                 '/initialpose',
+                                 self._poseEstimateCallback,
+                                 qos_profile_system_default)
 
         self.undock_action_client = ActionClient(self, Undock, '/undock')
         self.dock_action_client = ActionClient(self, DockServo, '/dock')
@@ -82,6 +89,58 @@ class TurtleBot4Navigator(BasicNavigator):
         pose.pose.orientation.w = math.cos(math.radians(rotation) / 2)
 
         return pose
+
+    def stampPose(self, pose):
+        """
+        Stamp a Pose message and return a PoseStamped message.
+
+        :param pose: Pose message
+        :return: PoseStamped message
+        """
+        poseStamped = PoseStamped()
+
+        poseStamped.header.frame_id = 'map'
+        poseStamped.header.stamp = self.get_clock().now().to_msg()
+
+        poseStamped.pose = pose
+
+        return poseStamped
+
+    def createPath(self):
+        """
+        Create a path using the '2D Pose Estimate' tool in Rviz
+
+        :return: List of PoseStamped poses
+        """
+        poses = []
+        self.new_pose = None
+        self.creating_path = True
+
+        self.info('Creating a path. Press CTRL+C to finish.')
+        self.info('Use the \'2D Pose Estimate\' tool in Rviz to add a pose to the path.')
+        try:
+            while self.creating_path:
+                while self.new_pose is None:
+                    rclpy.spin_once(self, timeout_sec=0.1)
+                self.info('Pose added.')
+                poses.append(self.stampPose(self.new_pose))
+                self.new_pose = None
+                self.clearAllCostmaps()
+
+        except KeyboardInterrupt:
+            self.creating_path = False
+
+        self.info('Path created.')
+        for i, p in enumerate(poses):
+            self.info('Pose {0} [x,y]=[{1:.3f},{2:.3f}] [x,y,z,w]=[{3:.3f},{4:.3f},{5:.3f},{6:.3f}]'.format(
+                i, p.pose.position.x, p.pose.position.y, p.pose.orientation.x,
+                p.pose.orientation.y, p.pose.orientation.z, p.pose.orientation.w))
+        return poses
+
+    # 2D Pose Estimate callback
+    def _poseEstimateCallback(self, msg: PoseWithCovarianceStamped):
+        if self.creating_path:
+            self.new_pose = msg.pose.pose
 
     # Dock subscription callback
     def _dockCallback(self, msg: Dock):
