@@ -2,8 +2,8 @@
 Changelog for package turtlebot4_navigation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.1 (2022-07-12)
+------------------
 * Install turtlebot4_navigation module
 * Added turtlebot4 navigator
 * Fixed AMCL robot_model_type parameter
