@@ -25,6 +25,7 @@ install(
 )
 
 ament_python_install_package(${PROJECT_NAME})
+ament_python_install_module(${PROJECT_NAME}/turtlebot4_navigator.py)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
