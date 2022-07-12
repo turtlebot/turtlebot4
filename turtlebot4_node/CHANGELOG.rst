@@ -2,6 +2,13 @@
 Changelog for package turtlebot4_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge pull request `#7 <https://github.com/turtlebot/turtlebot4/issues/7>`_ from turtlebot/roni-kreinin/linters
+  Fixed linter errors
+* Fixed linter errors
+* Contributors: Roni Kreinin, roni-kreinin
+
 0.1.0 (2022-05-03)
 ------------------
 * First Galactic release
