@@ -26,10 +26,12 @@ endif()
 find_package(rosidl_default_generators REQUIRED)
 find_package(std_msgs REQUIRED)
 
+
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/UserLed.msg"
   "msg/UserButton.msg"
   "msg/UserDisplay.msg"
+  "srv/MyProgram.srv"
 )
 
 ament_package()
