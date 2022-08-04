@@ -39,6 +39,7 @@ using WallFollow = irobot_create_msgs::action::WallFollow;
 using LedAnimation = irobot_create_msgs::action::LedAnimation;
 using EStop = irobot_create_msgs::srv::EStop;
 using Power = irobot_create_msgs::srv::RobotPower;
+using MyProgram = turtlebot4_msgs::srv::MyProgram;
 
 /**
  * @brief Turtlebot4 Node constructor
@@ -149,6 +150,7 @@ Turtlebot4::Turtlebot4()
     "led_animation");
   estop_client_ = std::make_unique<Turtlebot4Service<EStop>>(node_handle_, "e_stop");
   power_client_ = std::make_unique<Turtlebot4Service<Power>>(node_handle_, "robot_power");
+  my_program_client_ = std::make_unique<Turtlebot4Service<MyProgram>>(node_handle_, "my_program");
 
   function_callbacks_ = {
     {"Dock", std::bind(&Turtlebot4::dock_function_callback, this)},
@@ -162,6 +164,7 @@ Turtlebot4::Turtlebot4()
     {"Select", std::bind(&Turtlebot4::select_function_callback, this)},
     {"Back", std::bind(&Turtlebot4::back_function_callback, this)},
     {"Help", std::bind(&Turtlebot4::help_function_callback, this)},
+    {"My Program", std::bind(&Turtlebot4::my_program_function_callback, this)},    
   };
 
   // Set function callbacks
@@ -474,6 +477,29 @@ void Turtlebot4::estop_function_callback()
     estop_client_->make_request(request);
   } else {
     RCLCPP_ERROR(this->get_logger(), "EStop client NULL");
+  }
+}
+
+/**
+ * @brief Sends My Program service request
+ */
+void Turtlebot4::my_program_function_callback()
+{
+  if (my_program_client_ != nullptr) {
+    // Make request
+    auto request = std::make_shared<MyProgram::Request>();
+
+    request->my_program_on = true;
+
+    if (request->my_program_on) {
+      RCLCPP_INFO(this->get_logger(), "My Program requested and is active");
+    } else {
+      RCLCPP_INFO(this->get_logger(), "My Program is not active");
+    }
+
+    my_program_client_->make_request(request);
+  } else {
+    RCLCPP_ERROR(this->get_logger(), "My Program client NULL");
   }
 }
 

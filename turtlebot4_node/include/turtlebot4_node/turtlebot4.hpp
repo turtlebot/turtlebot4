@@ -44,7 +44,7 @@
 #include "irobot_create_msgs/action/led_animation.hpp"
 #include "irobot_create_msgs/srv/e_stop.hpp"
 #include "irobot_create_msgs/srv/robot_power.hpp"
-
+#include "turtlebot4_msgs/srv/my_program.hpp"
 
 /** Supported functions
  * Dock
@@ -67,6 +67,7 @@ public:
   using LedAnimation = irobot_create_msgs::action::LedAnimation;
   using EStop = irobot_create_msgs::srv::EStop;
   using Power = irobot_create_msgs::srv::RobotPower;
+  using MyProgram = turtlebot4_msgs::srv::MyProgram;
 
   // Constructor and Destructor
   Turtlebot4();
@@ -95,6 +96,7 @@ private:
   void back_function_callback();
   void help_function_callback();
   void unused_function_callback();
+  void my_program_function_callback();
 
   void add_button_function_callbacks();
   void add_menu_function_callbacks();
@@ -150,6 +152,7 @@ private:
   // Services
   std::unique_ptr<Turtlebot4Service<EStop>> estop_client_;
   std::unique_ptr<Turtlebot4Service<Power>> power_client_;
+  std::unique_ptr<Turtlebot4Service<MyProgram>> my_program_client_;
 
   // Timers
   rclcpp::TimerBase::SharedPtr display_timer_;
