@@ -132,7 +132,7 @@ class TurtleBot4Navigator(BasicNavigator):
         self.info('Path created.')
         for i, p in enumerate(poses):
             self.info('Pose {0} [x,y]=[{1:.3f},{2:.3f}]'.format(
-                i, p.pose.position.x, p.pose.position.y) + 
+                i, p.pose.position.x, p.pose.position.y) +
                 '[x,y,z,w]=[{0:.3f},{1:.3f},{2:.3f},{3:.3f}]'.format(
                 p.pose.orientation.x, p.pose.orientation.y,
                 p.pose.orientation.z, p.pose.orientation.w))
