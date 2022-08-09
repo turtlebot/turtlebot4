@@ -13,6 +13,7 @@
   <depend>rclcpp_action</depend>
   <depend>rcutils</depend>
   <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
   <depend>sensor_msgs</depend>
   <depend>turtlebot4_msgs</depend>
   <depend>irobot_create_msgs</depend>

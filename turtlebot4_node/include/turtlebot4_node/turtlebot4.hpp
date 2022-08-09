@@ -22,6 +22,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/battery_state.hpp>
 #include <std_msgs/msg/string.hpp>
+#include <std_srvs/srv/empty.hpp>
 
 #include <chrono>
 #include <map>
@@ -67,6 +68,7 @@ public:
   using LedAnimation = irobot_create_msgs::action::LedAnimation;
   using EStop = irobot_create_msgs::srv::EStop;
   using Power = irobot_create_msgs::srv::RobotPower;
+  using RplidarMotor = std_srvs::srv::Empty;
 
   // Constructor and Destructor
   Turtlebot4();
@@ -89,6 +91,7 @@ private:
   void wall_follow_right_function_callback();
   void estop_function_callback();
   void power_function_callback();
+  void rplidar_motor_function_callback();
   void scroll_up_function_callback();
   void scroll_down_function_callback();
   void select_function_callback();
@@ -150,6 +153,8 @@ private:
   // Services
   std::unique_ptr<Turtlebot4Service<EStop>> estop_client_;
   std::unique_ptr<Turtlebot4Service<Power>> power_client_;
+  std::unique_ptr<Turtlebot4EmptyService<RplidarMotor>> rplidar_start_motor_client_;
+  std::unique_ptr<Turtlebot4EmptyService<RplidarMotor>> rplidar_stop_motor_client_;
 
   // Timers
   rclcpp::TimerBase::SharedPtr display_timer_;
@@ -168,6 +173,9 @@ private:
 
   // Store current wheels state
   bool wheels_enabled_;
+
+  // RPLIDAR motor state
+  bool rplidar_motor_enabled_;
 
   // Timeout for when comms are considered disconnected
   uint32_t comms_timeout_ms_;
