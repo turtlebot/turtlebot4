@@ -519,7 +519,7 @@ void Turtlebot4::rplidar_motor_function_callback()
     
     rplidar_motor_enabled_ = !rplidar_motor_enabled_;
   } else {
-    RCLCPP_ERROR(this->get_logger(), "Power client NULL");
+    RCLCPP_ERROR(this->get_logger(), "RPLIDAR client NULL");
   }
 }
 
