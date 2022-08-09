@@ -141,9 +141,8 @@ private:
     * @input future - Shared future with goal response
     */
   void goal_response_callback(
-    std::shared_future<typename rclcpp_action::ClientGoalHandle<ActionT>::SharedPtr> future)
+    typename rclcpp_action::ClientGoalHandle<ActionT>::SharedPtr goal_handle)
   {
-    auto goal_handle = future.get();
     if (!goal_handle) {
       RCLCPP_ERROR(nh_->get_logger(), "%s goal was rejected by server", action_.c_str());
     } else {
