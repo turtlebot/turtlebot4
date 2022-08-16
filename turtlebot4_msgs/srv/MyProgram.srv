@@ -1,4 +1,0 @@
-bool my_program_on # true enables MyProgram and triggers a True flag
----
-bool success   # indicate successful application of command
-string message # information for result

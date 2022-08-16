@@ -1,8 +1,0 @@
-# Request
-bool is_my_program_two
----
-# Result
-bool my_program_two_on
----
-# Feedback
-bool is_status

@@ -39,10 +39,8 @@ using WallFollow = irobot_create_msgs::action::WallFollow;
 using LedAnimation = irobot_create_msgs::action::LedAnimation;
 using EStop = irobot_create_msgs::srv::EStop;
 using Power = irobot_create_msgs::srv::RobotPower;
-using MyProgram = turtlebot4_msgs::srv::MyProgram;
-using MyProgramOne = turtlebot4_msgs::srv::MyProgramOne;
-using MyProgramTwo = turtlebot4_msgs::action::MyProgramTwo;
-using MyProgramThree = turtlebot4_msgs::action::MyProgramThree;
+using UserService = turtlebot4_msgs::srv::UserService;
+using UserAction = turtlebot4_msgs::action::UserAction;
 /**
  * @brief Turtlebot4 Node constructor
  */
@@ -152,10 +150,10 @@ Turtlebot4::Turtlebot4()
     "led_animation");
   estop_client_ = std::make_unique<Turtlebot4Service<EStop>>(node_handle_, "e_stop");
   power_client_ = std::make_unique<Turtlebot4Service<Power>>(node_handle_, "robot_power");
-  my_program_client_ = std::make_unique<Turtlebot4Service<MyProgram>>(node_handle_, "my_program");
-  my_program_one_client_ = std::make_unique<Turtlebot4Service<MyProgramOne>>(node_handle_, "my_program_1");
-  my_program_two_client_ = std::make_unique<Turtlebot4Action<MyProgramTwo>>(node_handle_, "my_program_2");
-  my_program_three_client_ = std::make_unique<Turtlebot4Action<MyProgramThree>>(node_handle_, "my_program_3");
+  my_program_client_ = std::make_unique<Turtlebot4Service<UserService>>(node_handle_, "my_program");
+  my_program_one_client_ = std::make_unique<Turtlebot4Service<UserService>>(node_handle_, "my_program_1");
+  my_program_two_client_ = std::make_unique<Turtlebot4Action<UserAction>>(node_handle_, "my_program_2");
+  my_program_three_client_ = std::make_unique<Turtlebot4Action<UserAction>>(node_handle_, "my_program_3");
 
 
   function_callbacks_ = {
@@ -496,7 +494,7 @@ void Turtlebot4::my_program_function_callback()
 {
   if (my_program_client_ != nullptr) {
     // Make request
-    auto request = std::make_shared<MyProgram::Request>();
+    auto request = std::make_shared<UserService::Request>();
 
     request->my_program_on = true;
 
@@ -519,11 +517,11 @@ void Turtlebot4::my_program_one_function_callback()
 {
   if (my_program_one_client_ != nullptr) {
     // Make request
-    auto request = std::make_shared<MyProgramOne::Request>();
+    auto request = std::make_shared<UserService::Request>();
 
-    request->my_program_one_on = true;
+    request->my_program_on = true;
 
-    if (request->my_program_one_on) {
+    if (request->my_program_on) {
       RCLCPP_INFO(this->get_logger(), "My Program 1 requested and is active");
     } else {
       RCLCPP_INFO(this->get_logger(), "My Program 1 is not active");
@@ -542,8 +540,8 @@ void Turtlebot4::my_program_two_function_callback()
 {
   if (my_program_two_client_ != nullptr) {
     RCLCPP_INFO(this->get_logger(), "My Program 2 Action-Server");
-    auto goal_msg = std::make_shared<MyProgramTwo::Goal>();
-    goal_msg->is_my_program_two = true;
+    auto goal_msg = std::make_shared<UserAction::Goal>();
+    goal_msg->my_program_request = true;
     my_program_two_client_->send_goal(goal_msg);
   } else {
     RCLCPP_ERROR(this->get_logger(), "My Program 2 client NULL");
@@ -557,8 +555,8 @@ void Turtlebot4::my_program_three_function_callback()
 {
   if (my_program_three_client_ != nullptr) {
     RCLCPP_INFO(this->get_logger(), "My Program 3 Action-Server");
-    auto goal_msg = std::make_shared<MyProgramThree::Goal>();
-    goal_msg->is_my_program_three = true;
+    auto goal_msg = std::make_shared<UserAction::Goal>();
+    goal_msg->my_program_request = true;
     my_program_three_client_->send_goal(goal_msg);
   } else {
     RCLCPP_ERROR(this->get_logger(), "My Program 3 client NULL");

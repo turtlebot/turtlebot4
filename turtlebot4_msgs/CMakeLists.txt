@@ -32,10 +32,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/UserLed.msg"
   "msg/UserButton.msg"
   "msg/UserDisplay.msg"
-  "srv/MyProgram.srv"
-  "srv/MyProgramOne.srv"
-  "action/MyProgramTwo.action"
-  "action/MyProgramThree.action"
+  "srv/UserService.srv"
+  "action/UserAction.action"
   DEPENDENCIES action_msgs
 )
 ament_export_dependencies(rosidl_default_runtime)

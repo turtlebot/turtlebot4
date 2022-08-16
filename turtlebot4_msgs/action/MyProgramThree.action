@@ -1,8 +1,0 @@
-# Request
-bool is_my_program_three
----
-# Result
-bool my_program_three_on
----
-# Feedback
-bool is_status

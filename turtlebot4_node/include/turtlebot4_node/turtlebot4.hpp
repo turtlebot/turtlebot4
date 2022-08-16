@@ -44,10 +44,8 @@
 #include "irobot_create_msgs/action/led_animation.hpp"
 #include "irobot_create_msgs/srv/e_stop.hpp"
 #include "irobot_create_msgs/srv/robot_power.hpp"
-#include "turtlebot4_msgs/srv/my_program.hpp"
-#include "turtlebot4_msgs/srv/my_program_one.hpp"
-#include "turtlebot4_msgs/action/my_program_two.hpp"
-#include "turtlebot4_msgs/action/my_program_three.hpp"
+#include "turtlebot4_msgs/srv/user_service.hpp"
+#include "turtlebot4_msgs/action/user_action.hpp"
 
 /** Supported functions
  * Dock
@@ -70,10 +68,8 @@ public:
   using LedAnimation = irobot_create_msgs::action::LedAnimation;
   using EStop = irobot_create_msgs::srv::EStop;
   using Power = irobot_create_msgs::srv::RobotPower;
-  using MyProgram = turtlebot4_msgs::srv::MyProgram;
-  using MyProgramOne = turtlebot4_msgs::srv::MyProgramOne;
-  using MyProgramTwo = turtlebot4_msgs::action::MyProgramTwo;
-  using MyProgramThree = turtlebot4_msgs::action::MyProgramThree;
+  using UserService = turtlebot4_msgs::srv::UserService;
+  using UserAction = turtlebot4_msgs::action::UserAction;
 
   // Constructor and Destructor
   Turtlebot4();
@@ -157,14 +153,14 @@ private:
   std::unique_ptr<Turtlebot4Action<Undock>> undock_client_;
   std::unique_ptr<Turtlebot4Action<WallFollow>> wall_follow_client_;
   std::unique_ptr<Turtlebot4Action<LedAnimation>> led_animation_client_;
-  std::unique_ptr<Turtlebot4Action<MyProgramTwo>> my_program_two_client_;
-  std::unique_ptr<Turtlebot4Action<MyProgramThree>> my_program_three_client_;
+  std::unique_ptr<Turtlebot4Action<UserAction>> my_program_two_client_;
+  std::unique_ptr<Turtlebot4Action<UserAction>> my_program_three_client_;
 
   // Services
   std::unique_ptr<Turtlebot4Service<EStop>> estop_client_;
   std::unique_ptr<Turtlebot4Service<Power>> power_client_;
-  std::unique_ptr<Turtlebot4Service<MyProgram>> my_program_client_;
-  std::unique_ptr<Turtlebot4Service<MyProgramOne>> my_program_one_client_;
+  std::unique_ptr<Turtlebot4Service<UserService>> my_program_client_;
+  std::unique_ptr<Turtlebot4Service<UserService>> my_program_one_client_;
 
   // Timers
   rclcpp::TimerBase::SharedPtr display_timer_;

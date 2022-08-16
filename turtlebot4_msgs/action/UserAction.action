@@ -1,0 +1,8 @@
+# Request
+bool my_program_request
+---
+# Result
+bool my_program_result
+---
+# Feedback
+bool my_program_feedback
