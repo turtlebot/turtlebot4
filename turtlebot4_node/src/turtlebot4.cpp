@@ -40,7 +40,9 @@ using LedAnimation = irobot_create_msgs::action::LedAnimation;
 using EStop = irobot_create_msgs::srv::EStop;
 using Power = irobot_create_msgs::srv::RobotPower;
 using MyProgram = turtlebot4_msgs::srv::MyProgram;
-
+using MyProgramOne = turtlebot4_msgs::srv::MyProgramOne;
+using MyProgramTwo = turtlebot4_msgs::action::MyProgramTwo;
+using MyProgramThree = turtlebot4_msgs::action::MyProgramThree;
 /**
  * @brief Turtlebot4 Node constructor
  */
@@ -151,6 +153,10 @@ Turtlebot4::Turtlebot4()
   estop_client_ = std::make_unique<Turtlebot4Service<EStop>>(node_handle_, "e_stop");
   power_client_ = std::make_unique<Turtlebot4Service<Power>>(node_handle_, "robot_power");
   my_program_client_ = std::make_unique<Turtlebot4Service<MyProgram>>(node_handle_, "my_program");
+  my_program_one_client_ = std::make_unique<Turtlebot4Service<MyProgramOne>>(node_handle_, "my_program_1");
+  my_program_two_client_ = std::make_unique<Turtlebot4Action<MyProgramTwo>>(node_handle_, "my_program_2");
+  my_program_three_client_ = std::make_unique<Turtlebot4Action<MyProgramThree>>(node_handle_, "my_program_3");
+
 
   function_callbacks_ = {
     {"Dock", std::bind(&Turtlebot4::dock_function_callback, this)},
@@ -164,7 +170,10 @@ Turtlebot4::Turtlebot4()
     {"Select", std::bind(&Turtlebot4::select_function_callback, this)},
     {"Back", std::bind(&Turtlebot4::back_function_callback, this)},
     {"Help", std::bind(&Turtlebot4::help_function_callback, this)},
-    {"My Program", std::bind(&Turtlebot4::my_program_function_callback, this)},    
+    {"My Program", std::bind(&Turtlebot4::my_program_function_callback, this)},
+    {"My Program 1", std::bind(&Turtlebot4::my_program_one_function_callback, this)},
+    {"My Program 2", std::bind(&Turtlebot4::my_program_two_function_callback, this)},
+    {"My Program 3", std::bind(&Turtlebot4::my_program_three_function_callback, this)},    
   };
 
   // Set function callbacks
@@ -502,6 +511,60 @@ void Turtlebot4::my_program_function_callback()
     RCLCPP_ERROR(this->get_logger(), "My Program client NULL");
   }
 }
+
+/**
+ * @brief Sends My Program 1 service request
+ */
+void Turtlebot4::my_program_one_function_callback()
+{
+  if (my_program_one_client_ != nullptr) {
+    // Make request
+    auto request = std::make_shared<MyProgramOne::Request>();
+
+    request->my_program_one_on = true;
+
+    if (request->my_program_one_on) {
+      RCLCPP_INFO(this->get_logger(), "My Program 1 requested and is active");
+    } else {
+      RCLCPP_INFO(this->get_logger(), "My Program 1 is not active");
+    }
+
+    my_program_one_client_->make_request(request);
+  } else {
+    RCLCPP_ERROR(this->get_logger(), "My Program 1 client NULL");
+  }
+}
+
+/**
+ * @brief Sends My Program 2 action goal
+ */
+void Turtlebot4::my_program_two_function_callback()
+{
+  if (my_program_two_client_ != nullptr) {
+    RCLCPP_INFO(this->get_logger(), "My Program 2 Action-Server");
+    auto goal_msg = std::make_shared<MyProgramTwo::Goal>();
+    goal_msg->is_my_program_two = true;
+    my_program_two_client_->send_goal(goal_msg);
+  } else {
+    RCLCPP_ERROR(this->get_logger(), "My Program 2 client NULL");
+  }
+}
+
+/**
+ * @brief Sends My Program 3 action goal
+ */
+void Turtlebot4::my_program_three_function_callback()
+{
+  if (my_program_three_client_ != nullptr) {
+    RCLCPP_INFO(this->get_logger(), "My Program 3 Action-Server");
+    auto goal_msg = std::make_shared<MyProgramThree::Goal>();
+    goal_msg->is_my_program_three = true;
+    my_program_three_client_->send_goal(goal_msg);
+  } else {
+    RCLCPP_ERROR(this->get_logger(), "My Program 3 client NULL");
+  }
+}
+
 
 /**
  * @brief Sends power service request
