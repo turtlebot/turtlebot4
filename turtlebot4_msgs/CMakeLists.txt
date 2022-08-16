@@ -25,6 +25,7 @@ endif()
 
 find_package(rosidl_default_generators REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(action_msgs REQUIRED)
 
 
 rosidl_generate_interfaces(${PROJECT_NAME}
@@ -32,6 +33,10 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/UserButton.msg"
   "msg/UserDisplay.msg"
   "srv/MyProgram.srv"
+  "srv/MyProgramOne.srv"
+  "action/MyProgramTwo.action"
+  "action/MyProgramThree.action"
+  DEPENDENCIES action_msgs
 )
-
+ament_export_dependencies(rosidl_default_runtime)
 ament_package()
