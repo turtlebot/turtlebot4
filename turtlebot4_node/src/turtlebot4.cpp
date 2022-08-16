@@ -141,6 +141,19 @@ Turtlebot4::Turtlebot4()
   ip_pub_ = this->create_publisher<std_msgs::msg::String>(
     "ip",
     rclcpp::QoS(rclcpp::KeepLast(10)));
+  
+  user_program_pub_one = this->create_publisher<std_msgs::msg::Bool>(
+    "user_program_1",
+    rclcpp::QoS(rclcpp::KeepLast(10)));
+  user_program_pub_two = this->create_publisher<std_msgs::msg::Bool>(
+    "user_program_2",
+    rclcpp::QoS(rclcpp::KeepLast(10)));
+  user_program_pub_three = this->create_publisher<std_msgs::msg::Bool>(
+    "user_program_3",
+    rclcpp::QoS(rclcpp::KeepLast(10)));
+  user_program_pub_four = this->create_publisher<std_msgs::msg::Bool>(
+    "user_program_4",
+    rclcpp::QoS(rclcpp::KeepLast(10)));
 
   // Create action/service clients
   dock_client_ = std::make_unique<Turtlebot4Action<Dock>>(node_handle_, "dock");
@@ -167,6 +180,10 @@ Turtlebot4::Turtlebot4()
     {"Select", std::bind(&Turtlebot4::select_function_callback, this)},
     {"Back", std::bind(&Turtlebot4::back_function_callback, this)},
     {"Help", std::bind(&Turtlebot4::help_function_callback, this)},
+    {"User Program 1", std::bind(&Turtlebot4::user_program_one_function_callback, this)},
+    {"User Program 2", std::bind(&Turtlebot4::user_program_two_function_callback, this)},
+    {"User Program 3", std::bind(&Turtlebot4::user_program_three_function_callback, this)},
+    {"User Program 4", std::bind(&Turtlebot4::user_program_four_function_callback, this)},
   };
 
   // Set function callbacks
@@ -206,6 +223,7 @@ void Turtlebot4::run()
 
   buttons_timer(std::chrono::milliseconds(10));
   wifi_timer(std::chrono::milliseconds(5000));
+  user_program_timer(std::chrono::milliseconds(500));
   comms_timer(std::chrono::milliseconds(comms_timeout_ms_));
 }
 
@@ -277,6 +295,28 @@ void Turtlebot4::wifi_timer(const std::chrono::milliseconds timeout)
           leds_->set_led(WIFI, GREEN);
         }
       }
+    });
+}
+
+/**
+ * @brief Creates and runs timer to check Wifi connection
+ * @input timeout - Sets timer period in milliseconds
+ */
+void Turtlebot4::user_program_timer(const std::chrono::milliseconds timeout)
+{
+  user_program_timer_ = this->create_wall_timer(
+    timeout,
+    [this]() -> void
+    {
+      
+      // Publish Bool
+      std_msgs::msg::Bool msg;
+      msg.data = false;
+      this->user_program_pub_one->publish(std::move(msg));
+      this->user_program_pub_two->publish(std::move(msg));
+      this->user_program_pub_three->publish(std::move(msg));
+      this->user_program_pub_four->publish(std::move(msg));
+
     });
 }
 
@@ -562,6 +602,50 @@ void Turtlebot4::help_function_callback()
     help_message.push_back("4:" + turtlebot4_buttons_[Turtlebot4ButtonEnum::HMI_4].short_function_);
     display_->show_message(help_message);
   }
+}
+
+/**
+ * @brief User Program 1 callback function to publish bool
+ */
+void Turtlebot4::user_program_one_function_callback()
+{
+    // Publish Bool
+    std_msgs::msg::Bool msg;
+    msg.data = true;
+    this->user_program_pub_one->publish(std::move(msg));
+}
+
+/**
+ * @brief User Program 2 callback function to publish bool
+ */
+void Turtlebot4::user_program_two_function_callback()
+{
+    // Publish Bool
+    std_msgs::msg::Bool msg;
+    msg.data = true;
+    this->user_program_pub_two->publish(std::move(msg));
+}
+
+/**
+ * @brief User Program 3 callback function to publish bool
+ */
+void Turtlebot4::user_program_three_function_callback()
+{
+    // Publish Bool
+    std_msgs::msg::Bool msg;
+    msg.data = true;
+    this->user_program_pub_three->publish(std::move(msg));
+}
+
+/**
+ * @brief User Program 4 callback function to publish bool
+ */
+void Turtlebot4::user_program_four_function_callback()
+{
+    // Publish Bool
+    std_msgs::msg::Bool msg;
+    msg.data = true;
+    this->user_program_pub_four->publish(std::move(msg));
 }
 
 /**

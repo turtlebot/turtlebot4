@@ -23,6 +23,7 @@
 #include <sensor_msgs/msg/battery_state.hpp>
 #include <std_msgs/msg/string.hpp>
 #include <std_srvs/srv/empty.hpp>
+#include <std_msgs/msg/bool.hpp>
 
 #include <chrono>
 #include <map>
@@ -103,6 +104,10 @@ private:
   void add_menu_function_callbacks();
 
   void low_battery_animation();
+  void user_program_one_function_callback();
+  void user_program_two_function_callback();
+  void user_program_three_function_callback();
+  void user_program_four_function_callback();
 
   // Run display timer
   void display_timer(const std::chrono::milliseconds timeout);
@@ -121,6 +126,9 @@ private:
 
   // Run power off timer
   void power_off_timer(const std::chrono::milliseconds timeout);
+
+  // Run user program timer
+  void user_program_timer(const std::chrono::milliseconds timeout);
 
   // IP
   std::string get_ip();
@@ -163,6 +171,7 @@ private:
   rclcpp::TimerBase::SharedPtr wifi_timer_;
   rclcpp::TimerBase::SharedPtr comms_timer_;
   rclcpp::TimerBase::SharedPtr power_off_timer_;
+  rclcpp::TimerBase::SharedPtr user_program_timer_;
 
   // Subscribers
   rclcpp::Subscription<sensor_msgs::msg::BatteryState>::SharedPtr battery_sub_;
@@ -170,6 +179,10 @@ private:
 
   // Publishers
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr ip_pub_;
+  rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr user_program_pub_one;
+  rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr user_program_pub_two;
+  rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr user_program_pub_three;
+  rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr user_program_pub_four;
 
   // Store current wheels state
   bool wheels_enabled_;
