@@ -39,6 +39,7 @@ using WallFollow = irobot_create_msgs::action::WallFollow;
 using LedAnimation = irobot_create_msgs::action::LedAnimation;
 using EStop = irobot_create_msgs::srv::EStop;
 using Power = irobot_create_msgs::srv::RobotPower;
+using RplidarMotor = std_srvs::srv::Empty;
 
 /**
  * @brief Turtlebot4 Node constructor
@@ -47,6 +48,7 @@ Turtlebot4::Turtlebot4()
 : Node("turtlebot4_node",
     rclcpp::NodeOptions().use_intra_process_comms(true)),
   wheels_enabled_(true),
+  rplidar_motor_enabled_(true),
   comms_timeout_ms_(30000)
 {
   RCLCPP_INFO(get_logger(), "Init Turtlebot4 Node Main");
@@ -149,6 +151,8 @@ Turtlebot4::Turtlebot4()
     "led_animation");
   estop_client_ = std::make_unique<Turtlebot4Service<EStop>>(node_handle_, "e_stop");
   power_client_ = std::make_unique<Turtlebot4Service<Power>>(node_handle_, "robot_power");
+  rplidar_start_motor_client_ = std::make_unique<Turtlebot4EmptyService<RplidarMotor>>(node_handle_, "start_motor");
+  rplidar_stop_motor_client_ = std::make_unique<Turtlebot4EmptyService<RplidarMotor>>(node_handle_, "stop_motor");
 
   function_callbacks_ = {
     {"Dock", std::bind(&Turtlebot4::dock_function_callback, this)},
@@ -157,6 +161,7 @@ Turtlebot4::Turtlebot4()
     {"Wall Follow Right", std::bind(&Turtlebot4::wall_follow_right_function_callback, this)},
     {"EStop", std::bind(&Turtlebot4::estop_function_callback, this)},
     {"Power", std::bind(&Turtlebot4::power_function_callback, this)},
+    {"RPLIDAR Motor", std::bind(&Turtlebot4::rplidar_motor_function_callback, this)},
     {"Scroll Up", std::bind(&Turtlebot4::scroll_up_function_callback, this)},
     {"Scroll Down", std::bind(&Turtlebot4::scroll_down_function_callback, this)},
     {"Select", std::bind(&Turtlebot4::select_function_callback, this)},
@@ -490,6 +495,31 @@ void Turtlebot4::power_function_callback()
     power_client_->make_request(request);
   } else {
     RCLCPP_ERROR(this->get_logger(), "Power client NULL");
+  }
+}
+
+/**
+ * @brief Sends rplidat motor on/off request
+ */
+void Turtlebot4::rplidar_motor_function_callback()
+{
+  if (rplidar_start_motor_client_ != nullptr && rplidar_stop_motor_client_ != nullptr) {
+    
+    auto request = std::make_shared<RplidarMotor::Request>();
+
+    if (rplidar_motor_enabled_)
+    {
+      rplidar_stop_motor_client_->make_request(request);
+      RCLCPP_INFO(this->get_logger(), "RPLIDAR Motor stopped");
+    }
+    else {
+      rplidar_start_motor_client_->make_request(request);
+      RCLCPP_INFO(this->get_logger(), "RPLIDAR Motor started");
+    }
+    
+    rplidar_motor_enabled_ = !rplidar_motor_enabled_;
+  } else {
+    RCLCPP_ERROR(this->get_logger(), "RPLIDAR client NULL");
   }
 }
 
