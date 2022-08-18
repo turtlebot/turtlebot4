@@ -119,9 +119,7 @@ void Display::select()
     return;
   }
 
-  if (visible_entries_[selected_line_].cb_ != nullptr) {
-    visible_entries_[selected_line_].cb_();
-  }
+  visible_entries_[selected_line_].function_call();
 }
 
 void Display::back()

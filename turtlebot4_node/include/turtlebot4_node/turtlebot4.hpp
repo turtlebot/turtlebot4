@@ -98,6 +98,7 @@ private:
   void back_function_callback();
   void help_function_callback();
   void unused_function_callback();
+  void function_call_callback(std::string function_name);
 
   void add_button_function_callbacks();
   void add_menu_function_callbacks();
@@ -170,6 +171,7 @@ private:
 
   // Publishers
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr ip_pub_;
+  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr function_call_pub_;
 
   // Store current wheels state
   bool wheels_enabled_;
