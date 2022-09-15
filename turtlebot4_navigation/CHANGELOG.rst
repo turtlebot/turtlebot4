@@ -2,8 +2,8 @@
 Changelog for package turtlebot4_navigation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.2 (2022-09-15)
+------------------
 * ci: Fixed flake8 lint
 * Contributors: Daisuke Nishimatsu, Roni Kreinin
 

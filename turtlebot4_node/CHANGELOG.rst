@@ -2,8 +2,8 @@
 Changelog for package turtlebot4_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.2 (2022-09-15)
+------------------
 * Added support for Empty service
 * Added RPLIDAR motor stop service as a function option
 * Added timeouts to services (defaults to 30s)
