@@ -33,7 +33,7 @@
 #include <utility>
 
 using turtlebot4::Turtlebot4;
-using Dock = irobot_create_msgs::action::DockServo;
+using Dock = irobot_create_msgs::action::Dock;
 using Undock = irobot_create_msgs::action::Undock;
 using WallFollow = irobot_create_msgs::action::WallFollow;
 using LedAnimation = irobot_create_msgs::action::LedAnimation;
