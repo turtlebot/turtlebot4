@@ -57,14 +57,14 @@ struct Turtlebot4MenuEntry
    */
   void function_call()
   {
-    if (cb_ != nullptr)
-    {
-      cb_();
-    }
-
     if (function_call_cb_ != nullptr)
     {
       function_call_cb_(function_);
+    }
+
+    if (cb_ != nullptr)
+    {
+      cb_();
     }
   }
 };
