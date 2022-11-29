@@ -339,11 +339,6 @@ void Turtlebot4::battery_callback(const sensor_msgs::msg::BatteryState::SharedPt
   if (model_ == Turtlebot4Model::STANDARD) {
     display_->set_battery(battery_state_msg);
 
-    // Reset Comms timer
-    comms_timer_->cancel();
-    leds_->set_led(COMMS, GREEN);
-    comms_timer(std::chrono::milliseconds(comms_timeout_ms_));
-
     // Set Battery LED
     if (battery_state_msg->percentage > 0.5) {
       leds_->set_led(BATTERY, GREEN);
@@ -363,6 +358,11 @@ void Turtlebot4::wheel_status_callback(
   wheels_enabled_ = wheel_status_msg->wheels_enabled;
 
   if (model_ == Turtlebot4Model::STANDARD) {
+    // Reset Comms timer
+    comms_timer_->cancel();
+    leds_->set_led(COMMS, GREEN);
+    comms_timer(std::chrono::milliseconds(comms_timeout_ms_));
+
     // Set Motors LED
     if (wheels_enabled_) {
       leds_->set_led(MOTORS, GREEN);
