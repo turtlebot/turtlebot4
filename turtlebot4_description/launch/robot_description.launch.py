@@ -51,6 +51,10 @@ def generate_launch_description():
             {'use_sim_time': LaunchConfiguration('use_sim_time')},
             {'robot_description': Command(['xacro', ' ', xacro_file, ' ', 'gazebo:=ignition'])},
         ],
+        remappings=[
+            ('/tf', 'tf'),
+            ('/tf_static', 'tf_static')
+        ]
     )
 
     # Define LaunchDescription variable
