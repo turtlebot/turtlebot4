@@ -3,18 +3,18 @@ name: turtlebot4_ci
 on: [push, pull_request]
 
 jobs:
-  turtlebot4_galactic_ci:
-    name: Galactic
-    runs-on: ubuntu-20.04
+  turtlebot4_humble_ci:
+    name: Humble
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2.3.4
-      - uses: ros-tooling/setup-ros@0.2.1
+      - uses: ros-tooling/setup-ros@v0.3
         with:
-          required-ros-distributions: galactic
-      - uses: ros-tooling/action-ros-ci@0.2.1
+          required-ros-distributions: humble
+      - uses: ros-tooling/action-ros-ci@v0.2
         id: action_ros_ci_step
         with:
-          target-ros2-distro: galactic
+          target-ros2-distro: humble
           import-token: ${{ secrets.GITHUB_TOKEN }}
           vcs-repo-file-url: dependencies.repos
           package-name:
