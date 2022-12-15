@@ -608,7 +608,9 @@ void Turtlebot4::add_button_function_callbacks()
       button.long_cb_ = std::bind(&Turtlebot4::unused_function_callback, this);
     }
 
-    button.function_call_cb_ = std::bind(&Turtlebot4::function_call_callback, this, std::placeholders::_1);
+    button.function_call_cb_ = std::bind(
+      &Turtlebot4::function_call_callback, this,
+      std::placeholders::_1);
   }
 }
 
@@ -624,7 +626,9 @@ void Turtlebot4::add_menu_function_callbacks()
     } else {
       entry.cb_ = std::bind(&Turtlebot4::unused_function_callback, this);
     }
-    entry.function_call_cb_ = std::bind(&Turtlebot4::function_call_callback, this, std::placeholders::_1);
+    entry.function_call_cb_ = std::bind(
+      &Turtlebot4::function_call_callback, this,
+      std::placeholders::_1);
   }
 }
 

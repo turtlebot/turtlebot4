@@ -85,7 +85,8 @@ struct Turtlebot4Button
   Turtlebot4ButtonState next_state_;
 
   explicit Turtlebot4Button(std::vector<std::string> params)
-  : current_state_(RELEASED),
+  : long_press_duration_ms_(0),
+    current_state_(RELEASED),
     next_state_(RELEASED)
   {
     // Short press function only
@@ -160,22 +161,20 @@ struct Turtlebot4Button
   void short_press()
   {
     if (short_cb_ != nullptr) {
-      short_cb_();
-      if (function_call_cb_ != nullptr)
-      {
+      if (function_call_cb_ != nullptr) {
         function_call_cb_(short_function_);
       }
+      short_cb_();
     }
   }
 
   void long_press()
   {
     if (long_cb_ != nullptr) {
-      long_cb_();
-      if (function_call_cb_ != nullptr)
-      {
+      if (function_call_cb_ != nullptr) {
         function_call_cb_(long_function_);
       }
+      long_cb_();
     }
   }
 };

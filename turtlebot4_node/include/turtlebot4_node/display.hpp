@@ -53,17 +53,15 @@ struct Turtlebot4MenuEntry
 
   /**
    * @brief Call menu function
-   * 
+   *
    */
   void function_call()
   {
-    if (function_call_cb_ != nullptr)
-    {
+    if (function_call_cb_ != nullptr) {
       function_call_cb_(function_);
     }
 
-    if (cb_ != nullptr)
-    {
+    if (cb_ != nullptr) {
       cb_();
     }
   }
