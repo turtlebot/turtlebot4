@@ -40,17 +40,17 @@ Leds::Leds(
   };
 
   user_led_sub_ = nh_->create_subscription<turtlebot4_msgs::msg::UserLed>(
-    "/hmi/led",
+    "hmi/led",
     rclcpp::SensorDataQoS(),
     std::bind(&Leds::user_led_callback, this, std::placeholders::_1));
 
-  leds_[Turtlebot4LedEnum::POWER]->create_publisher(nh_, "/hmi/led/_power");
-  leds_[Turtlebot4LedEnum::MOTORS]->create_publisher(nh_, "/hmi/led/_motors");
-  leds_[Turtlebot4LedEnum::COMMS]->create_publisher(nh_, "/hmi/led/_comms");
-  leds_[Turtlebot4LedEnum::WIFI]->create_publisher(nh_, "/hmi/led/_wifi");
-  leds_[Turtlebot4LedEnum::BATTERY]->create_publisher(nh_, "/hmi/led/_battery");
-  leds_[Turtlebot4LedEnum::USER_1]->create_publisher(nh_, "/hmi/led/_user1");
-  leds_[Turtlebot4LedEnum::USER_2]->create_publisher(nh_, "/hmi/led/_user2");
+  leds_[Turtlebot4LedEnum::POWER]->create_publisher(nh_, "hmi/led/_power");
+  leds_[Turtlebot4LedEnum::MOTORS]->create_publisher(nh_, "hmi/led/_motors");
+  leds_[Turtlebot4LedEnum::COMMS]->create_publisher(nh_, "hmi/led/_comms");
+  leds_[Turtlebot4LedEnum::WIFI]->create_publisher(nh_, "hmi/led/_wifi");
+  leds_[Turtlebot4LedEnum::BATTERY]->create_publisher(nh_, "hmi/led/_battery");
+  leds_[Turtlebot4LedEnum::USER_1]->create_publisher(nh_, "hmi/led/_user1");
+  leds_[Turtlebot4LedEnum::USER_2]->create_publisher(nh_, "hmi/led/_user2");
 }
 
 void Leds::spin_once()

@@ -19,10 +19,11 @@
 #ifndef TURTLEBOT4_NODE__SERVICE_HPP_
 #define TURTLEBOT4_NODE__SERVICE_HPP_
 
-#include <rclcpp/rclcpp.hpp>
 #include <memory>
 #include <future>
 #include <string>
+
+#include <rclcpp/rclcpp.hpp>
 
 namespace turtlebot4
 {
@@ -104,7 +105,7 @@ public:
             this->nh_->get_logger(), "Interrupted while waiting for the service %s.",
             this->service_.c_str());
           this->timer_->cancel();
-        } else if (rclcpp::Clock().now().seconds() > timeout) { // Timed out
+        } else if (rclcpp::Clock().now().seconds() > timeout) {  // Timed out
           RCLCPP_ERROR(
             this->nh_->get_logger(), "Service %s unavailable.",
             this->service_.c_str());
@@ -169,7 +170,7 @@ public:
             this->nh_->get_logger(), "Interrupted while waiting for the service %s.",
             this->service_.c_str());
           this->timer_->cancel();
-        } else if (rclcpp::Clock().now().seconds() > timeout) { // Timed out
+        } else if (rclcpp::Clock().now().seconds() > timeout) {  // Timed out
           RCLCPP_ERROR(
             this->nh_->get_logger(), "Service %s unavailable.",
             this->service_.c_str());

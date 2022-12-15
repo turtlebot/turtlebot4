@@ -151,8 +151,12 @@ Turtlebot4::Turtlebot4()
     "led_animation");
   estop_client_ = std::make_unique<Turtlebot4Service<EStop>>(node_handle_, "e_stop");
   power_client_ = std::make_unique<Turtlebot4Service<Power>>(node_handle_, "robot_power");
-  rplidar_start_motor_client_ = std::make_unique<Turtlebot4EmptyService<RplidarMotor>>(node_handle_, "start_motor");
-  rplidar_stop_motor_client_ = std::make_unique<Turtlebot4EmptyService<RplidarMotor>>(node_handle_, "stop_motor");
+  rplidar_start_motor_client_ = std::make_unique<Turtlebot4EmptyService<RplidarMotor>>(
+    node_handle_,
+    "start_motor");
+  rplidar_stop_motor_client_ = std::make_unique<Turtlebot4EmptyService<RplidarMotor>>(
+    node_handle_,
+    "stop_motor");
 
   function_callbacks_ = {
     {"Dock", std::bind(&Turtlebot4::dock_function_callback, this)},
@@ -504,19 +508,16 @@ void Turtlebot4::power_function_callback()
 void Turtlebot4::rplidar_motor_function_callback()
 {
   if (rplidar_start_motor_client_ != nullptr && rplidar_stop_motor_client_ != nullptr) {
-    
     auto request = std::make_shared<RplidarMotor::Request>();
 
-    if (rplidar_motor_enabled_)
-    {
+    if (rplidar_motor_enabled_) {
       rplidar_stop_motor_client_->make_request(request);
       RCLCPP_INFO(this->get_logger(), "RPLIDAR Motor stopped");
-    }
-    else {
+    } else {
       rplidar_start_motor_client_->make_request(request);
       RCLCPP_INFO(this->get_logger(), "RPLIDAR Motor started");
     }
-    
+
     rplidar_motor_enabled_ = !rplidar_motor_enabled_;
   } else {
     RCLCPP_ERROR(this->get_logger(), "RPLIDAR client NULL");

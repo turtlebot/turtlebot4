@@ -19,14 +19,15 @@
 #ifndef TURTLEBOT4_NODE__DISPLAY_HPP_
 #define TURTLEBOT4_NODE__DISPLAY_HPP_
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/battery_state.hpp>
 #include <std_msgs/msg/string.hpp>
 #include <std_msgs/msg/int32.hpp>
 
-#include <memory>
-#include <string>
-#include <vector>
 
 #include "turtlebot4_node/utils.hpp"
 #include "turtlebot4_msgs/msg/user_display.hpp"

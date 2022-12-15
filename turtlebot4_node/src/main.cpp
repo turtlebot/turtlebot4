@@ -17,11 +17,12 @@
  */
 
 #include <rcutils/cmdline_parser.h>
-#include <rclcpp/rclcpp.hpp>
 
 #include <chrono>
 #include <memory>
 #include <string>
+
+#include <rclcpp/rclcpp.hpp>
 
 #include "turtlebot4_node/turtlebot4.hpp"
 #include "turtlebot4_node/utils.hpp"
