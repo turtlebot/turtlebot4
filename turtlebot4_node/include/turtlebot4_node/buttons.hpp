@@ -76,6 +76,7 @@ struct Turtlebot4Button
   std::string long_function_;
   turtlebot4_function_callback_t short_cb_;
   turtlebot4_function_callback_t long_cb_;
+  turtlebot4_function_call_callback_t function_call_cb_;
 
   int long_press_duration_ms_;
   std::chrono::time_point<std::chrono::steady_clock> last_start_pressed_time_;
@@ -84,7 +85,8 @@ struct Turtlebot4Button
   Turtlebot4ButtonState next_state_;
 
   explicit Turtlebot4Button(std::vector<std::string> params)
-  : current_state_(RELEASED),
+  : long_press_duration_ms_(0),
+    current_state_(RELEASED),
     next_state_(RELEASED)
   {
     // Short press function only
@@ -159,6 +161,9 @@ struct Turtlebot4Button
   void short_press()
   {
     if (short_cb_ != nullptr) {
+      if (function_call_cb_ != nullptr) {
+        function_call_cb_(short_function_);
+      }
       short_cb_();
     }
   }
@@ -166,6 +171,9 @@ struct Turtlebot4Button
   void long_press()
   {
     if (long_cb_ != nullptr) {
+      if (function_call_cb_ != nullptr) {
+        function_call_cb_(long_function_);
+      }
       long_cb_();
     }
   }

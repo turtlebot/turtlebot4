@@ -73,6 +73,7 @@ static std::map<Turtlebot4Model, std::string> Turtlebot4ModelName
 };
 
 typedef std::function<void (void)> turtlebot4_function_callback_t;
+typedef std::function<void (std::string)> turtlebot4_function_call_callback_t;
 
 }  // namespace turtlebot4
 

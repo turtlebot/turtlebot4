@@ -142,6 +142,10 @@ Turtlebot4::Turtlebot4()
     "ip",
     rclcpp::QoS(rclcpp::KeepLast(10)));
 
+  function_call_pub_ = this->create_publisher<std_msgs::msg::String>(
+    "function_calls",
+    rclcpp::QoS(rclcpp::KeepLast(10)));
+
   // Create action/service clients
   dock_client_ = std::make_unique<Turtlebot4Action<Dock>>(node_handle_, "dock");
   undock_client_ = std::make_unique<Turtlebot4Action<Undock>>(node_handle_, "undock");
@@ -573,6 +577,17 @@ void Turtlebot4::unused_function_callback()
 }
 
 /**
+ * @brief Callback for when a function call is executed
+ */
+void Turtlebot4::function_call_callback(std::string function_name)
+{
+  std_msgs::msg::String msg;
+  msg.data = function_name;
+
+  function_call_pub_->publish(msg);
+}
+
+/**
  * @brief Creates action or service clients and adds appropriate callbacks
  * for each function declared in ROS parameters
  */
@@ -592,6 +607,10 @@ void Turtlebot4::add_button_function_callbacks()
     } else {
       button.long_cb_ = std::bind(&Turtlebot4::unused_function_callback, this);
     }
+
+    button.function_call_cb_ = std::bind(
+      &Turtlebot4::function_call_callback, this,
+      std::placeholders::_1);
   }
 }
 
@@ -607,6 +626,9 @@ void Turtlebot4::add_menu_function_callbacks()
     } else {
       entry.cb_ = std::bind(&Turtlebot4::unused_function_callback, this);
     }
+    entry.function_call_cb_ = std::bind(
+      &Turtlebot4::function_call_callback, this,
+      std::placeholders::_1);
   }
 }
 
