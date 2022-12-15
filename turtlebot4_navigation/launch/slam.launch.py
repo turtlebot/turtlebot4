@@ -78,7 +78,7 @@ def generate_launch_description():
                {'use_sim_time': LaunchConfiguration('use_sim_time')}
              ],
              remappings=remappings,
-             condition=IfCondition(sync)),  
+             condition=IfCondition(sync)),
 
         Node(package='slam_toolbox',
              executable='async_slam_toolbox_node',

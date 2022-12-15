@@ -19,13 +19,13 @@
 #ifndef TURTLEBOT4_NODE__BUTTONS_HPP_
 #define TURTLEBOT4_NODE__BUTTONS_HPP_
 
-#include <rclcpp/rclcpp.hpp>
-#include <std_msgs/msg/int32.hpp>
-#include <sensor_msgs/msg/joy.hpp>
-
 #include <string>
 #include <vector>
 #include <memory>
+
+#include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/int32.hpp>
+#include <sensor_msgs/msg/joy.hpp>
 
 #include "irobot_create_msgs/msg/interface_buttons.hpp"
 #include "turtlebot4_msgs/msg/user_button.hpp"
@@ -35,7 +35,7 @@
 namespace turtlebot4
 {
 
-enum Turtlebot4ButtonEnum: uint8_t
+enum Turtlebot4ButtonEnum : uint8_t
 {
   CREATE3_1,
   CREATE3_POWER,

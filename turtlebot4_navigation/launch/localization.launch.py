@@ -24,8 +24,6 @@ from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 
 from launch_ros.actions import PushRosNamespace
 
-from nav2_common.launch import RewrittenYaml
-
 
 ARGUMENTS = [
     DeclareLaunchArgument('use_sim_time', default_value='false',

@@ -42,7 +42,8 @@ def generate_launch_description():
             [pkg_turtlebot4_navigation, 'config', 'nav2.yaml']),
         description='Nav2 parameters')
 
-    namespace_arg = DeclareLaunchArgument('namespace',
+    namespace_arg = DeclareLaunchArgument(
+                        'namespace',
                         default_value='',
                         description='Robot namespace')
 
