@@ -51,7 +51,6 @@ def generate_launch_description():
         description='Full path to map yaml file to load')
 
     namespace = LaunchConfiguration('namespace')
-    map = LaunchConfiguration('map')
     use_sim_time = LaunchConfiguration('use_sim_time')
 
     localization = GroupAction([
@@ -62,7 +61,7 @@ def generate_launch_description():
                 PathJoinSubstitution(
                     [pkg_nav2_bringup, 'launch', 'localization_launch.py'])),
             launch_arguments={'namespace': namespace,
-                              'map': map,
+                              'map': LaunchConfiguration('map'),
                               'use_sim_time': use_sim_time,
                               'params_file': LaunchConfiguration('params')}.items()),
     ])
