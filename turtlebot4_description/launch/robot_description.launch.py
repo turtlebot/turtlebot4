@@ -73,6 +73,9 @@ def generate_launch_description():
                 '--frame-id', 'base_link',
                 '--child-frame-id', 'wheel_drop_left',
             ],
+            remappings=[
+                ('/tf_static', 'tf_static')
+            ],
             condition=LaunchConfigurationEquals('use_sim_time', 'false')
         )
 
@@ -90,6 +93,9 @@ def generate_launch_description():
                 '--yaw', '0.0',
                 '--frame-id', 'base_link',
                 '--child-frame-id', 'wheel_drop_right',
+            ],
+            remappings=[
+                ('/tf_static', 'tf_static')
             ],
             condition=LaunchConfigurationEquals('use_sim_time', 'false')
         )
