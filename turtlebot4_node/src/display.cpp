@@ -34,6 +34,7 @@ Display::Display(
   std::vector<Turtlebot4MenuEntry> entries,
   std::shared_ptr<rclcpp::Node> & nh)
 : nh_(nh),
+  update_required_(true),
   menu_entries_(entries),
   menu_override_(false),
   scroll_position_(0),
@@ -63,7 +64,11 @@ Display::Display(
  */
 void Display::set_ip(std::string ip)
 {
-  ip_ = ip;
+  if (ip_ != ip)
+  {
+    ip_ = ip;
+    request_update();
+  }
 }
 
 /**
@@ -72,7 +77,11 @@ void Display::set_ip(std::string ip)
  */
 void Display::set_battery(const sensor_msgs::msg::BatteryState::SharedPtr & battery_state_msg)
 {
-  battery_percentage_ = static_cast<int>(battery_state_msg->percentage * 100);
+  if (battery_percentage_ != static_cast<int>(battery_state_msg->percentage * 100))
+  {
+    battery_percentage_ = static_cast<int>(battery_state_msg->percentage * 100);
+    request_update();
+  }
 }
 
 void Display::scroll_down()
@@ -94,6 +103,7 @@ void Display::scroll_down()
   } else {
     selected_line_++;
   }
+  request_update();
 }
 
 void Display::scroll_up()
@@ -111,6 +121,7 @@ void Display::scroll_up()
   } else {
     selected_line_--;
   }
+  request_update();
 }
 
 void Display::select()
@@ -120,6 +131,7 @@ void Display::select()
   }
 
   visible_entries_[selected_line_].function_call();
+  request_update();
 }
 
 void Display::back()
@@ -130,6 +142,7 @@ void Display::back()
     scroll_position_ = 0;
     selected_line_ = 0;
   }
+  request_update();
 }
 
 /**
@@ -183,6 +196,7 @@ void Display::show_message(std::vector<std::string> message)
   }
 
   menu_override_ = true;
+  request_update();
 }
 
 void Display::show_message(std::string message)
@@ -205,6 +219,7 @@ void Display::show_message(std::string message)
   }
 
   menu_override_ = true;
+  request_update();
 }
 
 /**
@@ -239,7 +254,16 @@ void Display::update()
  */
 void Display::spin_once()
 {
-  update();
+  if (update_required_)
+  {
+    update();
+    update_required_ = false;
+  }
+}
+
+void Display::request_update()
+{
+  update_required_ = true;
 }
 
 void Display::display_message_callback(const std_msgs::msg::String::SharedPtr display_msg)

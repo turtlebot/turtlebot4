@@ -94,6 +94,7 @@ public:
 private:
   // Update display
   void update();
+  void request_update();
   void update_header();
   void set_menu_entries();
   void pad_line(std::string & line);
@@ -105,6 +106,7 @@ private:
   std::shared_ptr<rclcpp::Node> nh_;
   rclcpp::Publisher<turtlebot4_msgs::msg::UserDisplay>::SharedPtr display_pub_;
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr display_message_sub_;
+  bool update_required_;
 
   // Menu
   std::vector<Turtlebot4MenuEntry> menu_entries_;
