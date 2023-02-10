@@ -116,11 +116,11 @@
             rpy="0 0 ${pi/2}"/>
   </xacro:rplidar>
 
-  <xacro:camera_bracket name="oakd_pro_camera_bracket">
+  <xacro:camera_bracket name="oakd_camera_bracket">
     <origin xyz="${camera_mount_x_offset} ${camera_mount_y_offset} ${camera_mount_z_offset}"/>
   </xacro:camera_bracket>
 
-  <xacro:oakd name="oakd_pro" parent_link="oakd_pro_camera_bracket">
+  <xacro:oakd model="pro" parent_link="oakd_camera_bracket">
     <origin xyz="${oakd_pro_x_offset} ${oakd_pro_y_offset} ${oakd_pro_z_offset}"/>
   </xacro:oakd>
 

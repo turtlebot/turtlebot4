@@ -26,11 +26,11 @@
             rpy="0 0 ${pi/2}"/>
   </xacro:rplidar>
   
-  <xacro:camera_bracket name="oakd_lite_camera_bracket" parent_link="base_link">
+  <xacro:camera_bracket name="oakd_camera_bracket" parent_link="base_link">
     <origin xyz="${camera_mount_x_offset} ${camera_mount_y_offset} ${camera_mount_z_offset + base_link_z_offset}"/>
   </xacro:camera_bracket>
 
-  <xacro:oakd name="oakd_lite" parent_link="oakd_lite_camera_bracket">
+  <xacro:oakd model="lite" parent_link="oakd_camera_bracket">
     <origin xyz="${oakd_lite_x_offset} ${oakd_lite_y_offset} ${oakd_lite_z_offset}"/>
   </xacro:oakd>
 </robot>
