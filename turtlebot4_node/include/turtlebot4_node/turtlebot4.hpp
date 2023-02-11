@@ -29,6 +29,7 @@
 #include <sensor_msgs/msg/battery_state.hpp>
 #include <std_msgs/msg/string.hpp>
 #include <std_srvs/srv/empty.hpp>
+#include <std_srvs/srv/trigger.hpp>
 
 #include "turtlebot4_node/action.hpp"
 #include "turtlebot4_node/service.hpp"
@@ -39,6 +40,7 @@
 
 #include "irobot_create_msgs/msg/wheel_status.hpp"
 #include "irobot_create_msgs/msg/lightring_leds.hpp"
+#include "irobot_create_msgs/msg/dock_status.hpp"
 #include "irobot_create_msgs/action/undock.hpp"
 #include "irobot_create_msgs/action/dock.hpp"
 #include "irobot_create_msgs/action/wall_follow.hpp"
@@ -68,7 +70,8 @@ public:
   using LedAnimation = irobot_create_msgs::action::LedAnimation;
   using EStop = irobot_create_msgs::srv::EStop;
   using Power = irobot_create_msgs::srv::RobotPower;
-  using RplidarMotor = std_srvs::srv::Empty;
+  using EmptySrv = std_srvs::srv::Empty;
+  using TriggerSrv = std_srvs::srv::Trigger;
 
   // Constructor and Destructor
   Turtlebot4();
@@ -79,6 +82,8 @@ private:
 
   // Subscription callbacks
   void battery_callback(const sensor_msgs::msg::BatteryState::SharedPtr battery_state_msg);
+  void dock_status_callback(
+    const irobot_create_msgs::msg::DockStatus::SharedPtr dock_status_msg);
   void wheel_status_callback(
     const irobot_create_msgs::msg::WheelStatus::SharedPtr wheel_status_msg);
   void joy_callback(
@@ -91,7 +96,10 @@ private:
   void wall_follow_right_function_callback();
   void estop_function_callback();
   void power_function_callback();
-  void rplidar_motor_function_callback();
+  void rplidar_start_function_callback();
+  void rplidar_stop_function_callback();
+  void oakd_start_function_callback();
+  void oakd_stop_function_callback();
   void scroll_up_function_callback();
   void scroll_down_function_callback();
   void select_function_callback();
@@ -154,8 +162,10 @@ private:
   // Services
   std::unique_ptr<Turtlebot4Service<EStop>> estop_client_;
   std::unique_ptr<Turtlebot4Service<Power>> power_client_;
-  std::unique_ptr<Turtlebot4EmptyService<RplidarMotor>> rplidar_start_motor_client_;
-  std::unique_ptr<Turtlebot4EmptyService<RplidarMotor>> rplidar_stop_motor_client_;
+  std::unique_ptr<Turtlebot4EmptyService<EmptySrv>> rplidar_start_client_;
+  std::unique_ptr<Turtlebot4EmptyService<EmptySrv>> rplidar_stop_client_;
+  std::unique_ptr<Turtlebot4Service<TriggerSrv>> oakd_start_client_;
+  std::unique_ptr<Turtlebot4Service<TriggerSrv>> oakd_stop_client_;
 
   // Timers
   rclcpp::TimerBase::SharedPtr display_timer_;
@@ -167,6 +177,7 @@ private:
 
   // Subscribers
   rclcpp::Subscription<sensor_msgs::msg::BatteryState>::SharedPtr battery_sub_;
+  rclcpp::Subscription<irobot_create_msgs::msg::DockStatus>::SharedPtr dock_status_sub_;
   rclcpp::Subscription<irobot_create_msgs::msg::WheelStatus>::SharedPtr wheel_status_sub_;
 
   // Publishers
@@ -176,8 +187,8 @@ private:
   // Store current wheels state
   bool wheels_enabled_;
 
-  // RPLIDAR motor state
-  bool rplidar_motor_enabled_;
+  // Store current dock state
+  bool is_docked_;
 
   // Timeout for when comms are considered disconnected
   uint32_t comms_timeout_ms_;
