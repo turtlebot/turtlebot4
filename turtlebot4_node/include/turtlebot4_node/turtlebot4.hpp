@@ -190,6 +190,9 @@ private:
   // Store current dock state
   bool is_docked_;
 
+  // Store power saver mode
+  bool power_saver_;
+
   // Timeout for when comms are considered disconnected
   uint32_t comms_timeout_ms_;
 
