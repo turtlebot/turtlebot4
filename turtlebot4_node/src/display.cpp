@@ -64,8 +64,7 @@ Display::Display(
  */
 void Display::set_ip(std::string ip)
 {
-  if (ip_ != ip)
-  {
+  if (ip_ != ip) {
     ip_ = ip;
     request_update();
   }
@@ -77,8 +76,7 @@ void Display::set_ip(std::string ip)
  */
 void Display::set_battery(const sensor_msgs::msg::BatteryState::SharedPtr & battery_state_msg)
 {
-  if (battery_percentage_ != static_cast<int>(battery_state_msg->percentage * 100))
-  {
+  if (battery_percentage_ != static_cast<int>(battery_state_msg->percentage * 100)) {
     battery_percentage_ = static_cast<int>(battery_state_msg->percentage * 100);
     request_update();
   }
@@ -254,8 +252,7 @@ void Display::update()
  */
 void Display::spin_once()
 {
-  if (update_required_)
-  {
+  if (update_required_) {
     update();
     update_required_ = false;
   }

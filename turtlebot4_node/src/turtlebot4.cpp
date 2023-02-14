@@ -382,17 +382,12 @@ void Turtlebot4::dock_status_callback(
   const irobot_create_msgs::msg::DockStatus::SharedPtr dock_status_msg)
 {
   // Dock status has changed and power saver is enabled
-  if (dock_status_msg->is_docked != is_docked_ && power_saver_)
-  {
+  if (dock_status_msg->is_docked != is_docked_ && power_saver_) {
     // The robot has docked, turn off the camera and lidar
-    if (dock_status_msg->is_docked)
-    {
+    if (dock_status_msg->is_docked) {
       oakd_stop_function_callback();
       rplidar_stop_function_callback();
-    }
-    // The robot has undocked, turn on the camera and lidar
-    else
-    {
+    } else {  // The robot has undocked, turn on the camera and lidar
       oakd_start_function_callback();
       rplidar_start_function_callback();
     }
