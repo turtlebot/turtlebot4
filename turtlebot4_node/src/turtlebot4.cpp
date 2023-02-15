@@ -39,7 +39,8 @@ using WallFollow = irobot_create_msgs::action::WallFollow;
 using LedAnimation = irobot_create_msgs::action::LedAnimation;
 using EStop = irobot_create_msgs::srv::EStop;
 using Power = irobot_create_msgs::srv::RobotPower;
-using RplidarMotor = std_srvs::srv::Empty;
+using EmptySrv = std_srvs::srv::Empty;
+using TriggerSrv = std_srvs::srv::Trigger;
 
 /**
  * @brief Turtlebot4 Node constructor
@@ -48,7 +49,7 @@ Turtlebot4::Turtlebot4()
 : Node("turtlebot4_node",
     rclcpp::NodeOptions().use_intra_process_comms(true)),
   wheels_enabled_(true),
-  rplidar_motor_enabled_(true),
+  is_docked_(false),
   comms_timeout_ms_(30000)
 {
   RCLCPP_INFO(get_logger(), "Init Turtlebot4 Node Main");
@@ -72,6 +73,9 @@ Turtlebot4::Turtlebot4()
 
   this->declare_parameter("wifi.interface", "wlan0");
   wifi_interface_ = this->get_parameter("wifi.interface").as_string();
+
+  this->declare_parameter("power_saver", true);
+  power_saver_ = this->get_parameter("power_saver").as_bool();
 
   button_parameters_ = {
     {CREATE3_1, "buttons.create3_1"},
@@ -132,6 +136,11 @@ Turtlebot4::Turtlebot4()
     rclcpp::SensorDataQoS(),
     std::bind(&Turtlebot4::battery_callback, this, std::placeholders::_1));
 
+  dock_status_sub_ = this->create_subscription<irobot_create_msgs::msg::DockStatus>(
+    "dock_status",
+    rclcpp::SensorDataQoS(),
+    std::bind(&Turtlebot4::dock_status_callback, this, std::placeholders::_1));
+
   wheel_status_sub_ = this->create_subscription<irobot_create_msgs::msg::WheelStatus>(
     "wheel_status",
     rclcpp::SensorDataQoS(),
@@ -155,12 +164,18 @@ Turtlebot4::Turtlebot4()
     "led_animation");
   estop_client_ = std::make_unique<Turtlebot4Service<EStop>>(node_handle_, "e_stop");
   power_client_ = std::make_unique<Turtlebot4Service<Power>>(node_handle_, "robot_power");
-  rplidar_start_motor_client_ = std::make_unique<Turtlebot4EmptyService<RplidarMotor>>(
+  rplidar_start_client_ = std::make_unique<Turtlebot4EmptyService<EmptySrv>>(
     node_handle_,
     "start_motor");
-  rplidar_stop_motor_client_ = std::make_unique<Turtlebot4EmptyService<RplidarMotor>>(
+  rplidar_stop_client_ = std::make_unique<Turtlebot4EmptyService<EmptySrv>>(
     node_handle_,
     "stop_motor");
+  oakd_start_client_ = std::make_unique<Turtlebot4Service<TriggerSrv>>(
+    node_handle_,
+    "start_camera");
+  oakd_stop_client_ = std::make_unique<Turtlebot4Service<TriggerSrv>>(
+    node_handle_,
+    "stop_camera");
 
   function_callbacks_ = {
     {"Dock", std::bind(&Turtlebot4::dock_function_callback, this)},
@@ -169,7 +184,10 @@ Turtlebot4::Turtlebot4()
     {"Wall Follow Right", std::bind(&Turtlebot4::wall_follow_right_function_callback, this)},
     {"EStop", std::bind(&Turtlebot4::estop_function_callback, this)},
     {"Power", std::bind(&Turtlebot4::power_function_callback, this)},
-    {"RPLIDAR Motor", std::bind(&Turtlebot4::rplidar_motor_function_callback, this)},
+    {"RPLIDAR Start", std::bind(&Turtlebot4::rplidar_start_function_callback, this)},
+    {"RPLIDAR Stop", std::bind(&Turtlebot4::rplidar_stop_function_callback, this)},
+    {"OAKD Start", std::bind(&Turtlebot4::oakd_start_function_callback, this)},
+    {"OAKD Stop", std::bind(&Turtlebot4::oakd_stop_function_callback, this)},
     {"Scroll Up", std::bind(&Turtlebot4::scroll_up_function_callback, this)},
     {"Scroll Down", std::bind(&Turtlebot4::scroll_down_function_callback, this)},
     {"Select", std::bind(&Turtlebot4::select_function_callback, this)},
@@ -327,7 +345,7 @@ void Turtlebot4::battery_callback(const sensor_msgs::msg::BatteryState::SharedPt
 {
   if (battery_state_msg->percentage <= 0.12) {
     // Discharging
-    if (battery_state_msg->current < 0.0) {
+    if (!is_docked_) {
       // Wait 60s before powering off
       if (power_off_timer_ == nullptr || power_off_timer_->is_canceled()) {
         RCLCPP_WARN(this->get_logger(), "Low battery, starting power off timer");
@@ -357,6 +375,23 @@ void Turtlebot4::battery_callback(const sensor_msgs::msg::BatteryState::SharedPt
     } else {
       leds_->blink(BATTERY, 200, 0.5, RED);
     }
+  }
+}
+
+void Turtlebot4::dock_status_callback(
+  const irobot_create_msgs::msg::DockStatus::SharedPtr dock_status_msg)
+{
+  // Dock status has changed and power saver is enabled
+  if (dock_status_msg->is_docked != is_docked_ && power_saver_) {
+    // The robot has docked, turn off the camera and lidar
+    if (dock_status_msg->is_docked) {
+      oakd_stop_function_callback();
+      rplidar_stop_function_callback();
+    } else {  // The robot has undocked, turn on the camera and lidar
+      oakd_start_function_callback();
+      rplidar_start_function_callback();
+    }
+    is_docked_ = dock_status_msg->is_docked;
   }
 }
 
@@ -507,24 +542,58 @@ void Turtlebot4::power_function_callback()
 }
 
 /**
- * @brief Sends rplidat motor on/off request
+ * @brief Start RPLIDAR
  */
-void Turtlebot4::rplidar_motor_function_callback()
+void Turtlebot4::rplidar_start_function_callback()
 {
-  if (rplidar_start_motor_client_ != nullptr && rplidar_stop_motor_client_ != nullptr) {
-    auto request = std::make_shared<RplidarMotor::Request>();
-
-    if (rplidar_motor_enabled_) {
-      rplidar_stop_motor_client_->make_request(request);
-      RCLCPP_INFO(this->get_logger(), "RPLIDAR Motor stopped");
-    } else {
-      rplidar_start_motor_client_->make_request(request);
-      RCLCPP_INFO(this->get_logger(), "RPLIDAR Motor started");
-    }
-
-    rplidar_motor_enabled_ = !rplidar_motor_enabled_;
+  if (rplidar_start_client_ != nullptr) {
+    auto request = std::make_shared<EmptySrv::Request>();
+    rplidar_start_client_->make_request(request);
+    RCLCPP_INFO(this->get_logger(), "RPLIDAR started");
   } else {
     RCLCPP_ERROR(this->get_logger(), "RPLIDAR client NULL");
+  }
+}
+
+/**
+ * @brief Stop RPLIDAR
+ */
+void Turtlebot4::rplidar_stop_function_callback()
+{
+  if (rplidar_stop_client_ != nullptr) {
+    auto request = std::make_shared<EmptySrv::Request>();
+    rplidar_stop_client_->make_request(request);
+    RCLCPP_INFO(this->get_logger(), "RPLIDAR stopped");
+  } else {
+    RCLCPP_ERROR(this->get_logger(), "RPLIDAR client NULL");
+  }
+}
+
+/**
+ * @brief Start OAK-D
+ */
+void Turtlebot4::oakd_start_function_callback()
+{
+  if (oakd_start_client_ != nullptr) {
+    auto request = std::make_shared<TriggerSrv::Request>();
+    oakd_start_client_->make_request(request);
+    RCLCPP_INFO(this->get_logger(), "OAKD started");
+  } else {
+    RCLCPP_ERROR(this->get_logger(), "OAKD client NULL");
+  }
+}
+
+/**
+ * @brief Stop OAK-D
+ */
+void Turtlebot4::oakd_stop_function_callback()
+{
+  if (oakd_stop_client_ != nullptr) {
+    auto request = std::make_shared<TriggerSrv::Request>();
+    oakd_stop_client_->make_request(request);
+    RCLCPP_INFO(this->get_logger(), "OAKD stopped");
+  } else {
+    RCLCPP_ERROR(this->get_logger(), "OAKD client NULL");
   }
 }
 
