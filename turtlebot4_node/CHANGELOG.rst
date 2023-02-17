@@ -2,6 +2,21 @@
 Changelog for package turtlebot4_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Updates for new DepthAI node.
+* Linter fixes
+* Separated RPLIDAR Motor function into stop/start
+* Added OAKD stop/start function
+* Added power saver option
+* Update display only when something has changed
+* Function calls
+* Namespacing
+* Flash Comms LED based on high frequency wheel status feedback instead of low frequency battery state
+* Move comms_timer() from battery_callback() to wheel_status_callback()
+* Updated dock action
+* Contributors: Joey Yang, Roni Kreinin
+
 0.1.2 (2022-09-15)
 ------------------
 * Added support for Empty service

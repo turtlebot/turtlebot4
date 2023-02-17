@@ -2,6 +2,13 @@
 Changelog for package turtlebot4_navigation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Namespacing
+* Linter fixes
+* Nav2, localization, and slam launch and config files
+* Contributors: Roni Kreinin
+
 0.1.2 (2022-09-15)
 ------------------
 * ci: Fixed flake8 lint
