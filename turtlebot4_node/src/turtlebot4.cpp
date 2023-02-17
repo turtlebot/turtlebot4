@@ -172,10 +172,10 @@ Turtlebot4::Turtlebot4()
     "stop_motor");
   oakd_start_client_ = std::make_unique<Turtlebot4Service<TriggerSrv>>(
     node_handle_,
-    "start_camera");
+    "oakd/start_camera");
   oakd_stop_client_ = std::make_unique<Turtlebot4Service<TriggerSrv>>(
     node_handle_,
-    "stop_camera");
+    "oakd/stop_camera");
 
   function_callbacks_ = {
     {"Dock", std::bind(&Turtlebot4::dock_function_callback, this)},
