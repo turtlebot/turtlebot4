@@ -2,8 +2,8 @@
 Changelog for package turtlebot4_navigation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.0 (2023-02-17)
+------------------
 * Namespacing
 * Linter fixes
 * Nav2, localization, and slam launch and config files

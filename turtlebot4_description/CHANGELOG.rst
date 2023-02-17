@@ -2,8 +2,8 @@
 Changelog for package turtlebot4_description
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.0 (2023-02-17)
+------------------
 * Updates for new DepthAI node.
 * Added tf_static remapping to support namespacing
 * Updated oakd link names to match new oakd node
