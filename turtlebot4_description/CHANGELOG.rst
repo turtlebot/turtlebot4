@@ -2,6 +2,9 @@
 Changelog for package turtlebot4_description
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.0 (2023-02-17)
 ------------------
 * Updates for new DepthAI node.

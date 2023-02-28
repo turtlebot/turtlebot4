@@ -2,6 +2,11 @@
 Changelog for package turtlebot4_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Force 1HZ update on display
+* Contributors: Roni Kreinin
+
 1.0.0 (2023-02-17)
 ------------------
 * Updates for new DepthAI node.
