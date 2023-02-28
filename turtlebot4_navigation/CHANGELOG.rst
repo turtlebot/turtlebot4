@@ -2,8 +2,8 @@
 Changelog for package turtlebot4_navigation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.1 (2023-02-28)
+------------------
 * Navigator fixes
 * Contributors: Roni Kreinin
 
