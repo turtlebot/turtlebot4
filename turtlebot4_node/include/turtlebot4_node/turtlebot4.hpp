@@ -60,6 +60,14 @@
 namespace turtlebot4
 {
 
+// Timer Periods
+static constexpr auto BUTTONS_TIMER_PERIOD = 10;
+static constexpr auto COMMS_TIMER_PERIOD = 30000;
+static constexpr auto DISPLAY_TIMER_PERIOD = 50;
+static constexpr auto LEDS_TIMER_PERIOD = 50;
+static constexpr auto POWER_OFF_TIMER_PERIOD = 60000;
+static constexpr auto WIFI_TIMER_PERIOD = 5000;
+
 class Turtlebot4 : public rclcpp::Node
 {
 public:
@@ -192,9 +200,6 @@ private:
 
   // Store power saver mode
   bool power_saver_;
-
-  // Timeout for when comms are considered disconnected
-  uint32_t comms_timeout_ms_;
 
   // Turtlebot4 Model
   Turtlebot4Model model_;

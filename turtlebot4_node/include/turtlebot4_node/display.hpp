@@ -91,10 +91,12 @@ public:
   // Spin Once
   void spin_once();
 
+  // Request display update
+  void request_update();
+
 private:
   // Update display
   void update();
-  void request_update();
   void update_header();
   void set_menu_entries();
   void pad_line(std::string & line);

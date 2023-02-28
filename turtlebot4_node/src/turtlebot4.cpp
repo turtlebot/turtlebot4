@@ -49,8 +49,7 @@ Turtlebot4::Turtlebot4()
 : Node("turtlebot4_node",
     rclcpp::NodeOptions().use_intra_process_comms(true)),
   wheels_enabled_(true),
-  is_docked_(false),
-  comms_timeout_ms_(30000)
+  is_docked_(false)
 {
   RCLCPP_INFO(get_logger(), "Init Turtlebot4 Node Main");
 
@@ -226,13 +225,13 @@ void Turtlebot4::run()
     // Set Motors LED
     leds_->set_led(MOTORS, GREEN);
 
-    display_timer(std::chrono::milliseconds(50));
-    leds_timer(std::chrono::milliseconds(50));
+    display_timer(std::chrono::milliseconds(DISPLAY_TIMER_PERIOD));
+    leds_timer(std::chrono::milliseconds(LEDS_TIMER_PERIOD));
   }
 
-  buttons_timer(std::chrono::milliseconds(10));
-  wifi_timer(std::chrono::milliseconds(5000));
-  comms_timer(std::chrono::milliseconds(comms_timeout_ms_));
+  buttons_timer(std::chrono::milliseconds(BUTTONS_TIMER_PERIOD));
+  wifi_timer(std::chrono::milliseconds(WIFI_TIMER_PERIOD));
+  comms_timer(std::chrono::milliseconds(COMMS_TIMER_PERIOD));
 }
 
 /**
@@ -245,6 +244,12 @@ void Turtlebot4::display_timer(const std::chrono::milliseconds timeout)
     timeout,
     [this]() -> void
     {
+      static uint8_t counter = 0;
+      // Force update display at 1hz
+      if (++counter == 1000 / DISPLAY_TIMER_PERIOD) {
+        display_->request_update();
+        counter = 0;
+      }
       display_->spin_once();
     });
 }
@@ -349,7 +354,7 @@ void Turtlebot4::battery_callback(const sensor_msgs::msg::BatteryState::SharedPt
       // Wait 60s before powering off
       if (power_off_timer_ == nullptr || power_off_timer_->is_canceled()) {
         RCLCPP_WARN(this->get_logger(), "Low battery, starting power off timer");
-        power_off_timer(std::chrono::milliseconds(60000));
+        power_off_timer(std::chrono::milliseconds(POWER_OFF_TIMER_PERIOD));
       }
     } else {
       if (power_off_timer_ != nullptr && !power_off_timer_->is_canceled()) {
@@ -404,7 +409,7 @@ void Turtlebot4::wheel_status_callback(
     // Reset Comms timer
     comms_timer_->cancel();
     leds_->set_led(COMMS, GREEN);
-    comms_timer(std::chrono::milliseconds(comms_timeout_ms_));
+    comms_timer(std::chrono::milliseconds(COMMS_TIMER_PERIOD));
 
     // Set Motors LED
     if (wheels_enabled_) {

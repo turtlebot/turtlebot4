@@ -19,14 +19,15 @@
 
 from enum import IntEnum
 import math
+from threading import Thread
 import time
 
 from action_msgs.msg import GoalStatus
 
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 
-from irobot_create_msgs.action import DockServo, Undock
-from irobot_create_msgs.msg import Dock
+from irobot_create_msgs.action import Dock, Undock
+from irobot_create_msgs.msg import DockStatus
 
 from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult
 
@@ -54,18 +55,21 @@ class TurtleBot4Navigator(BasicNavigator):
     def __init__(self):
         super().__init__()
 
-        self.create_subscription(Dock,
-                                 '/dock',
+        self.create_subscription(DockStatus,
+                                 'dock_status',
                                  self._dockCallback,
                                  qos_profile_sensor_data)
 
         self.create_subscription(PoseWithCovarianceStamped,
-                                 '/initialpose',
+                                 'initialpose',
                                  self._poseEstimateCallback,
                                  qos_profile_system_default)
 
-        self.undock_action_client = ActionClient(self, Undock, '/undock')
-        self.dock_action_client = ActionClient(self, DockServo, '/dock')
+        self.undock_action_client = ActionClient(self, Undock, 'undock')
+        self.dock_action_client = ActionClient(self, Dock, 'dock')
+
+        self.undock_result_future = None
+        self.dock_result_future = None
 
     def getPoseStamped(self, position, rotation):
         """
@@ -115,27 +119,35 @@ class TurtleBot4Navigator(BasicNavigator):
         self.new_pose = None
         self.creating_path = True
 
-        self.info('Creating a path. Press CTRL+C to finish.')
+        self.info('Creating a path. Press Enter to finish.')
         self.info('Use the "2D Pose Estimate" tool in Rviz to add a pose to the path.')
-        try:
-            while self.creating_path:
-                while self.new_pose is None:
+
+        def wait_for_key():
+            input()
+
+        input_thread = Thread(target=wait_for_key, daemon=True)
+        input_thread.start()
+
+        while self.creating_path:
+            while self.new_pose is None:
+                if input_thread.is_alive():
                     rclpy.spin_once(self, timeout_sec=0.1)
+                else:
+                    self.creating_path = False
+                    break
+            if self.new_pose:
                 self.info('Pose added.')
                 poses.append(self.stampPose(self.new_pose))
                 self.new_pose = None
                 self.clearAllCostmaps()
-
-        except KeyboardInterrupt:
-            self.creating_path = False
-
-        self.info('Path created.')
-        for i, p in enumerate(poses):
-            self.info('Pose {0} [x,y]=[{1:.3f},{2:.3f}]'.format(
-                i, p.pose.position.x, p.pose.position.y) +
-                '[x,y,z,w]=[{0:.3f},{1:.3f},{2:.3f},{3:.3f}]'.format(
-                p.pose.orientation.x, p.pose.orientation.y,
-                p.pose.orientation.z, p.pose.orientation.w))
+        if len(poses) > 0:
+            self.info('Path created.')
+            for i, p in enumerate(poses):
+                self.info('Pose {0} [x,y]=[{1:.3f},{2:.3f}]'.format(
+                    i, p.pose.position.x, p.pose.position.y) +
+                    '[x,y,z,w]=[{0:.3f},{1:.3f},{2:.3f},{3:.3f}]'.format(
+                    p.pose.orientation.x, p.pose.orientation.y,
+                    p.pose.orientation.z, p.pose.orientation.w))
         return poses
 
     # 2D Pose Estimate callback
@@ -143,8 +155,8 @@ class TurtleBot4Navigator(BasicNavigator):
         if self.creating_path:
             self.new_pose = msg.pose.pose
 
-    # Dock subscription callback
-    def _dockCallback(self, msg: Dock):
+    # DockStatus subscription callback
+    def _dockCallback(self, msg: DockStatus):
         self.is_docked = msg.is_docked
 
     def getDockedStatus(self):
@@ -215,7 +227,7 @@ class TurtleBot4Navigator(BasicNavigator):
             time.sleep(0.1)
 
     def dock_send_goal(self):
-        goal_msg = DockServo.Goal()
+        goal_msg = Dock.Goal()
         self.dock_action_client.wait_for_server()
         goal_future = self.dock_action_client.send_goal_async(goal_msg)
 
