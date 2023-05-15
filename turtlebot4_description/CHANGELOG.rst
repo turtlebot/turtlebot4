@@ -2,8 +2,8 @@
 Changelog for package turtlebot4_description
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.2 (2023-05-15)
+------------------
 * New maps and Improved Nav2 Config
 * Added namespace arg to urdf for namespacing support in sim
 * Replaced wheel drop static transforms with joint state publisher

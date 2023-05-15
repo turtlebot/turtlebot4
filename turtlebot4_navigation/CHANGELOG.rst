@@ -2,8 +2,8 @@
 Changelog for package turtlebot4_navigation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.2 (2023-05-15)
+------------------
 * Added namespacing support in sim
 * Set warehouse map as default
 * New map files for new and modified worlds
