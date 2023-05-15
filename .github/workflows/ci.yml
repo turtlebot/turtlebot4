@@ -16,7 +16,6 @@ jobs:
         with:
           target-ros2-distro: humble
           import-token: ${{ secrets.GITHUB_TOKEN }}
-          vcs-repo-file-url: dependencies.repos
           package-name:
             turtlebot4_description
             turtlebot4_msgs

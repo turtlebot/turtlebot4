@@ -19,7 +19,6 @@ from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
-from launch.conditions import LaunchConfigurationEquals
 from launch.substitutions import Command, PathJoinSubstitution
 from launch.substitutions.launch_configuration import LaunchConfiguration
 
@@ -33,6 +32,10 @@ ARGUMENTS = [
     DeclareLaunchArgument('use_sim_time', default_value='false',
                           choices=['true', 'false'],
                           description='use_sim_time'),
+    DeclareLaunchArgument('robot_name', default_value='turtlebot4',
+                          description='Robot name'),
+    DeclareLaunchArgument('namespace', default_value=LaunchConfiguration('robot_name'),
+                          description='Robot namespace'),
 ]
 
 
@@ -42,6 +45,7 @@ def generate_launch_description():
                                        'urdf',
                                        LaunchConfiguration('model'),
                                        'turtlebot4.urdf.xacro'])
+    namespace = LaunchConfiguration('namespace')
 
     robot_state_publisher = Node(
         package='robot_state_publisher',
@@ -50,7 +54,10 @@ def generate_launch_description():
         output='screen',
         parameters=[
             {'use_sim_time': LaunchConfiguration('use_sim_time')},
-            {'robot_description': Command(['xacro', ' ', xacro_file, ' ', 'gazebo:=ignition'])},
+            {'robot_description': Command([
+                'xacro', ' ', xacro_file, ' ',
+                'gazebo:=ignition', ' ',
+                'namespace:=', namespace])},
         ],
         remappings=[
             ('/tf', 'tf'),
@@ -58,52 +65,21 @@ def generate_launch_description():
         ]
     )
 
-    left_wheel_drop_stf = Node(
-            name='left_wheel_drop_stf',
-            package='tf2_ros',
-            executable='static_transform_publisher',
-            output='screen',
-            arguments=[
-                '--x', '0.0',
-                '--y', '0.1165',
-                '--z', '0.0402',
-                '--roll', '-1.5707',
-                '--pitch', '0.0',
-                '--yaw', '0.0',
-                '--frame-id', 'base_link',
-                '--child-frame-id', 'wheel_drop_left',
-            ],
-            remappings=[
-                ('/tf_static', 'tf_static')
-            ],
-            condition=LaunchConfigurationEquals('use_sim_time', 'false')
-        )
-
-    right_wheel_drop_stf = Node(
-            name='right_wheel_drop_stf',
-            package='tf2_ros',
-            executable='static_transform_publisher',
-            output='screen',
-            arguments=[
-                '--x', '0.0',
-                '--y', '-0.1165',
-                '--z', '0.0402',
-                '--roll', '-1.5707',
-                '--pitch', '0.0',
-                '--yaw', '0.0',
-                '--frame-id', 'base_link',
-                '--child-frame-id', 'wheel_drop_right',
-            ],
-            remappings=[
-                ('/tf_static', 'tf_static')
-            ],
-            condition=LaunchConfigurationEquals('use_sim_time', 'false')
-        )
+    joint_state_publisher = Node(
+        package='joint_state_publisher',
+        executable='joint_state_publisher',
+        name='joint_state_publisher',
+        output='screen',
+        parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
+        remappings=[
+            ('/tf', 'tf'),
+            ('/tf_static', 'tf_static')
+        ]
+    )
 
     # Define LaunchDescription variable
     ld = LaunchDescription(ARGUMENTS)
     # Add nodes to LaunchDescription
     ld.add_action(robot_state_publisher)
-    ld.add_action(left_wheel_drop_stf)
-    ld.add_action(right_wheel_drop_stf)
+    ld.add_action(joint_state_publisher)
     return ld

@@ -132,6 +132,7 @@
           <near>0.3</near>
           <far>100</far>
         </clip>
+        <optical_frame_id>${name}_rgb_camera_optical_frame</optical_frame_id>
       </camera>
       <always_on>1</always_on>
       <update_rate>30</update_rate>
