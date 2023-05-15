@@ -2,6 +2,15 @@
 Changelog for package turtlebot4_navigation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Added namespacing support in sim
+* Set warehouse map as default
+* New map files for new and modified worlds
+* Updating robot radius to max radius and increasing inflation
+* Added missing Nav2 plugin
+* Contributors: Hilary Luo, Roni Kreinin
+
 1.0.1 (2023-02-28)
 ------------------
 * Navigator fixes

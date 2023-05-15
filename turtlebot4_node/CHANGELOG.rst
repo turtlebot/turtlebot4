@@ -2,6 +2,9 @@
 Changelog for package turtlebot4_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.1 (2023-02-28)
 ------------------
 * Force 1HZ update on display
