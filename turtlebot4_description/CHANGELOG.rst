@@ -2,8 +2,8 @@
 Changelog for package turtlebot4_description
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.3 (2023-05-31)
+------------------
 * Added joint_state_publisher dependency
 * Contributors: Roni Kreinin
 
