@@ -10,6 +10,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>irobot_create_description</depend>
+  <depend>joint_state_publisher</depend>
   <depend>robot_state_publisher</depend>
   <depend>urdf</depend>
 
