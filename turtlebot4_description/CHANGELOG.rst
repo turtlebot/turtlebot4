@@ -2,6 +2,11 @@
 Changelog for package turtlebot4_description
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Added joint_state_publisher dependency
+* Contributors: Roni Kreinin
+
 1.0.2 (2023-05-15)
 ------------------
 * New maps and Improved Nav2 Config
