@@ -3,7 +3,7 @@ name: Bug Report
 about: Provide a report for what the issue is
 title: ''
 labels: bug
-assignees: roni-kreinin
+assignees: hilary-luo
 
 ---
 
