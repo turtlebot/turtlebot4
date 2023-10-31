@@ -55,10 +55,10 @@ def launch_setup(context, *args, **kwargs):
 
     namespace_str = namespace.perform(context)
     if (namespace_str and not namespace_str.startswith('/')):
-      namespace_str = '/' + namespace_str
+        namespace_str = '/' + namespace_str
 
     launch_nav2 = PathJoinSubstitution(
-      [pkg_nav2_bringup, 'launch', 'navigation_launch.py'])
+        [pkg_nav2_bringup, 'launch', 'navigation_launch.py'])
 
     nav2 = GroupAction([
         PushRosNamespace(namespace),
