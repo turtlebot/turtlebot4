@@ -2,8 +2,8 @@
 Changelog for package turtlebot4_navigation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.4 (2023-11-08)
+------------------
 * Use opaque function to allow for remapping of scan topics (<https://github.com/turtlebot/turtlebot4/issues/293>)
 * Contributors: Hilary Luo
 
