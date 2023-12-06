@@ -21,7 +21,7 @@
               <color>0.1098 0.1098 0.1098 1.0</color>
             </diffuse>
             <specular>
-              <color>0.0 0.0 0.01.0</color>
+              <color>0.0 0.0 0.0 1.0</color>
             </specular>
             <shininess>
               <float>0.0</float>
