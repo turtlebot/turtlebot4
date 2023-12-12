@@ -2,9 +2,9 @@
 <robot name="turtlebot4" xmlns:xacro="http://ros.org/wiki/xacro">
   <!-- Base create3 model -->
   <xacro:include filename="$(find irobot_create_description)/urdf/create3.urdf.xacro" />
-  <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/rplidar.urdf.xacro" />
-  <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/oakd.urdf.xacro" />
-  <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/camera_bracket.urdf.xacro" />
+  <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/rplidar_macro.xacro" />
+  <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/oakd_macro.xacro" />
+  <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/camera_bracket_macro.xacro" />
 
   <!-- Mechanical properties -->
   <xacro:property name="rplidar_x_offset"              value="${0.393584*cm2m}"/>
@@ -25,7 +25,7 @@
     <origin xyz="${rplidar_x_offset} ${rplidar_y_offset} ${rplidar_z_offset + base_link_z_offset}"
             rpy="0 0 ${pi/2}"/>
   </xacro:rplidar>
-  
+
   <xacro:camera_bracket name="oakd_camera_bracket" parent_link="base_link">
     <origin xyz="${camera_mount_x_offset} ${camera_mount_y_offset} ${camera_mount_z_offset + base_link_z_offset}"/>
   </xacro:camera_bracket>
