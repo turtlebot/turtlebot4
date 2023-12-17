@@ -1,12 +1,10 @@
-name: Bug Report
-description: Use this form when you are confident that there is a bug in this particular package. If you are not sure then use the Troubleshooting Form.
-labels: ["bug"]
+name: Troubleshooting Help
+description: Use this form when you are looking for assistance to understand why the system is not working how you think it should.
+labels: ["troubleshooting"]
 assignees:
-  - hilary-luo
+  - smatar22
+  - RustyCPR
 body:
-  - type: markdown
-    attributes:
-      value: __Only use this form if you are confident that there is a bug in this package and that it is not user error. If you are not sure then please use the troubleshooting form.__
   - type: markdown
     attributes:
       value: "# System Information"
@@ -78,6 +76,22 @@ body:
   - type: markdown
     attributes:
       value: "# Problem Description"
+  - type: dropdown
+    id: build-type
+    attributes:
+      label: Type of issue
+      description: What component or topic do you need help with?
+      options:
+        - Select One
+        - Networking
+        - Camera
+        - LIDAR
+        - Battery
+        - Navigation (SLAM, Nav2 etc.)
+        - Other
+
+    validations:
+      required: true
   - type: textarea
     attributes:
       label: Expected behaviour
