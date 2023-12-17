@@ -77,7 +77,7 @@ body:
     attributes:
       value: "# Problem Description"
   - type: dropdown
-    id: build-type
+    id: topic-tag
     attributes:
       label: Type of issue
       description: What component or topic do you need help with?
@@ -89,7 +89,6 @@ body:
         - Battery
         - Navigation (SLAM, Nav2 etc.)
         - Other
-
     validations:
       required: true
   - type: textarea
