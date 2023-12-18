@@ -17,7 +17,7 @@ body:
       description: Standard has a screen, Lite does not. For simulation select the one that you are simulating.
       options:
         - Select One
-        - Turltebot4 Standard
+        - Turtlebot4 Standard
         - Turtlebot4 Lite
     validations:
       required: true
