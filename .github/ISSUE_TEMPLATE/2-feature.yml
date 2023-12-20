@@ -1,0 +1,23 @@
+name: Feature request
+description: Use this form for requesting a feature that current doesn't exist.
+labels: ["enhancement"]
+assignees:
+  - smatar22
+  - RustyCPR
+body:
+  - type: textarea
+    attributes:
+      label: Describe the the feature you would like
+      description: A clear and concise description of what you want to happen.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Motivation and impact
+      description: Why is this an important feature and who will it impact?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Other notes
+      description: Add anything else you thing is important.

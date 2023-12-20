@@ -1,0 +1,111 @@
+name: Bug Report
+description: Use this form when you are confident that there is a bug in this particular package. If you are not sure then use the Troubleshooting Form.
+labels: ["bug"]
+assignees:
+  - hilary-luo
+body:
+  - type: markdown
+    attributes:
+      value: __Only use this form if you are confident that there is a bug in this package and that it is not user error. If you are not sure then please use the troubleshooting form.__
+  - type: markdown
+    attributes:
+      value: "# System Information"
+  - type: dropdown
+    id: model
+    attributes:
+      label: Robot Model
+      description: Standard has a screen, Lite does not. For simulation select the one that you are simulating.
+      options:
+        - Select One
+        - Turtlebot4 Standard
+        - Turtlebot4 Lite
+    validations:
+      required: true
+  - type: dropdown
+    id: ros-distro
+    attributes:
+      label: ROS distro
+      description: What ROS distribution are you using (must match on all devices in the system)?
+      options:
+        - Select One
+        - Galactic
+        - Humble
+    validations:
+      required: true
+  - type: dropdown
+    id: networking
+    attributes:
+      label: Networking Configuration
+      options:
+        - Select One
+        - Simple Discovery
+        - Discovery Server
+        - I do not know
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: OS
+      description: What OS are you running on your companion PC (used to interact with the Turtlebot4)?
+      options:
+        - Select One
+        - Ubuntu 20.04
+        - Ubuntu 22.04
+        - Other Linux
+        - Windows / MAC
+    validations:
+      required: true
+  - type: dropdown
+    id: build-type
+    attributes:
+      label: Built from source or installed?
+      description: Did you build from source (build the packages yourself) or did you install the packages (e.g. `sudo apt install ...`)?
+      options:
+        - Select One
+        - Built from Source
+        - Installed
+    validations:
+      required: true
+  - type: textarea
+    id: version
+    attributes:
+      label: Package version
+      description: What version of the package are you running? (if installed run `dpkg -s ros-$ROS_DISTRO-turtlebot4-PACKAGE_WITH_ISSUE`, if from source, give commit hash)
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: "# Problem Description"
+  - type: textarea
+    attributes:
+      label: Expected behaviour
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Actual behaviour
+      description: A clear and concise description of what you encountered.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Error messages
+      description: Error messages copied from terminal and/or relevant logs. Copy these directly from the terminal in full.
+      render: bash
+  - type: textarea
+    attributes:
+      label: To Reproduce
+      description: Provide the steps to reproduce.
+      placeholder: |
+        1. run something
+        2. launch something else
+        3. see the error
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Other notes
+      description: Add anything else you thing is important.
