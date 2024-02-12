@@ -2,7 +2,7 @@ name: Feature request
 description: Use this form for requesting a feature that current doesn't exist.
 labels: ["enhancement"]
 assignees:
-  - smatar22
+  - smatarCPR
   - RustyCPR
 body:
   - type: textarea

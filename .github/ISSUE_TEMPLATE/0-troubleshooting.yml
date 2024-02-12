@@ -2,7 +2,7 @@ name: Troubleshooting Help
 description: Use this form when you are looking for assistance to understand why the system is not working how you think it should.
 labels: ["troubleshooting"]
 assignees:
-  - smatar22
+  - smatarCPR
   - RustyCPR
 body:
   - type: markdown
