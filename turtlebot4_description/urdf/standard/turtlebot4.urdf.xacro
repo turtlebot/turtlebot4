@@ -2,12 +2,12 @@
 <robot name="turtlebot4" xmlns:xacro="http://ros.org/wiki/xacro">
   <!-- Base create3 model -->
   <xacro:include filename="$(find irobot_create_description)/urdf/create3.urdf.xacro" />
-  <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/rplidar.urdf.xacro" />
-  <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/oakd.urdf.xacro" />
-  <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/camera_bracket.urdf.xacro" />
-  <xacro:include filename="$(find turtlebot4_description)/urdf/standard/tower_standoff.urdf.xacro" />
-  <xacro:include filename="$(find turtlebot4_description)/urdf/standard/tower_sensor_plate.urdf.xacro" />
-  <xacro:include filename="$(find turtlebot4_description)/urdf/standard/weight_block.urdf.xacro" />
+  <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/rplidar_macro.xacro" />
+  <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/oakd_macro.xacro" />
+  <xacro:include filename="$(find turtlebot4_description)/urdf/sensors/camera_bracket_macro.xacro" />
+  <xacro:include filename="$(find turtlebot4_description)/urdf/standard/tower_standoff_macro.xacro" />
+  <xacro:include filename="$(find turtlebot4_description)/urdf/standard/tower_sensor_plate_macro.xacro" />
+  <xacro:include filename="$(find turtlebot4_description)/urdf/standard/weight_block_macro.xacro" />
 
   <!-- Mechanical properties -->
   <xacro:property name="shell_z_offset"                value="${3*cm2m}" />
