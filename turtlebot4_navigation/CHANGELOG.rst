@@ -2,8 +2,8 @@
 Changelog for package turtlebot4_navigation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.1.0 (2025-05-23)
+------------------
 * Change footprint from radius to octagon of similar size (`#592 <https://github.com/turtlebot/turtlebot4/issues/592>`_)
 * Nav2 changed how use_sim_time is set, should not be in yaml (`#564 <https://github.com/turtlebot/turtlebot4/issues/564>`_)
 * Fix tag order
