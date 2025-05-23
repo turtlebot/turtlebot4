@@ -2,6 +2,13 @@
 Changelog for package turtlebot4_description
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Remove unnecessary comments
+* Fix tag order
+* Update package maintainers
+* Contributors: Chris Iverach-Brereton
+
 2.0.1 (2024-09-25)
 ------------------
 

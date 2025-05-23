@@ -2,6 +2,15 @@
 Changelog for package turtlebot4_navigation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Change footprint from radius to octagon of similar size (`#592 <https://github.com/turtlebot/turtlebot4/issues/592>`_)
+* Nav2 changed how use_sim_time is set, should not be in yaml (`#564 <https://github.com/turtlebot/turtlebot4/issues/564>`_)
+* Fix tag order
+* Update package maintainers
+* Adds support for namespaces to TurtleBot4Navigator.
+* Contributors: Chris Iverach-Brereton, Hilary Luo, Pbopbo, Pradyum Aadith
+
 2.0.1 (2024-09-25)
 ------------------
 * Revert to using base_link for navigation; the create3 uses that for odom, and using a different link appears to break slam_toolbox. Update the SLAM launch parameters

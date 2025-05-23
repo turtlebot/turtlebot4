@@ -2,6 +2,12 @@
 Changelog for package turtlebot4_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix tag order
+* Update package maintainers
+* Contributors: Chris Iverach-Brereton
+
 2.0.1 (2024-09-25)
 ------------------
 
