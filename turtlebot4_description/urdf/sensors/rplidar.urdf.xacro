@@ -35,14 +35,9 @@
   </link>
 
   <gazebo reference="${name}_link">
-    <!--
-      GPU Ray sensor plugin only supports 180 degrees, so limit to the "front" arc only
-      The lidar is actually mounted sideways on the robot, with +x to the left, so the
-      front arc is actually 0 to -pi
-    -->
-    <xacro:ray_sensor sensor_name="${name}" gazebo="${gazebo}" 
-                  update_rate="62.0" visualize="1" 
-                  h_samples="640" h_res="1.0" h_min_angle="${-pi}" h_max_angle="${pi}" 
+    <xacro:ray_sensor sensor_name="${name}" gazebo="${gazebo}"
+                  update_rate="62.0" visualize="1"
+                  h_samples="640" h_res="1.0" h_min_angle="${-pi}" h_max_angle="${pi}"
                   r_min="0.164" r_max="12.0" r_res="0.01">
                   <plugin name="dummy" filename="dummyfile"></plugin>
     </xacro:ray_sensor>

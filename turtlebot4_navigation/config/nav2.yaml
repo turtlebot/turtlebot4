@@ -135,7 +135,6 @@ local_costmap:
       width: 3
       height: 3
       resolution: 0.06
-      #robot_radius: 0.175
       footprint: "[[ 0.189,  0.000],
                   [ 0.134, -0.134],
                   [ 0.000, -0.189],
@@ -182,7 +181,6 @@ global_costmap:
       publish_frequency: 1.0
       global_frame: map
       robot_base_frame: base_link
-      #robot_radius: 0.175
       footprint: "[[ 0.189,  0.000],
                   [ 0.134, -0.134],
                   [ 0.000, -0.189],
