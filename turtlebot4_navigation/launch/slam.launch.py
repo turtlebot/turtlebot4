@@ -88,6 +88,7 @@ def launch_setup(context, *args, **kwargs):
 
         SetRemap('/tf', namespace_str + '/tf'),
         SetRemap('/tf_static', namespace_str + '/tf_static'),
+        SetRemap('/diagnostics', namespace_str + '/diagnostics'),
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(launch_slam_sync),
