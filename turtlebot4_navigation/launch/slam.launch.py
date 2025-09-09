@@ -29,6 +29,8 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import PushRosNamespace, SetRemap
 
+from nav2_common.launch import RewrittenYaml
+
 pkg_turtlebot4_navigation = get_package_share_directory('turtlebot4_navigation')
 pkg_slam_toolbox = get_package_share_directory('slam_toolbox')
 
@@ -71,14 +73,21 @@ def launch_setup(context, *args, **kwargs):
     launch_slam_async = PathJoinSubstitution(
         [pkg_slam_toolbox, 'launch', 'online_async_launch.py'])
 
+    rewritten_slam_params = RewrittenYaml(
+        source_file=slam_params,
+        root_key=namespace_str,
+        param_rewrites={
+            'map_name': namespace_str + '/map',
+            'scan_topic': namespace_str + '/scan',
+        },
+        convert_types=True,
+    )
+
     slam = GroupAction([
         PushRosNamespace(namespace),
 
         SetRemap('/tf', namespace_str + '/tf'),
         SetRemap('/tf_static', namespace_str + '/tf_static'),
-        SetRemap('/scan', namespace_str + '/scan'),
-        SetRemap('/map', namespace_str + '/map'),
-        SetRemap('/map_metadata', namespace_str + '/map_metadata'),
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(launch_slam_sync),
@@ -86,7 +95,7 @@ def launch_setup(context, *args, **kwargs):
                 ('use_sim_time', use_sim_time),
                 ('autostart', autostart),
                 ('use_lifecycle_manager', use_lifecycle_manager),
-                ('slam_params_file', slam_params)
+                ('slam_params_file', rewritten_slam_params)
             ],
             condition=IfCondition(sync)
         ),
@@ -97,7 +106,7 @@ def launch_setup(context, *args, **kwargs):
                 ('use_sim_time', use_sim_time),
                 ('autostart', autostart),
                 ('use_lifecycle_manager', use_lifecycle_manager),
-                ('slam_params_file', slam_params)
+                ('slam_params_file', rewritten_slam_params)
             ],
             condition=UnlessCondition(sync)
         )
