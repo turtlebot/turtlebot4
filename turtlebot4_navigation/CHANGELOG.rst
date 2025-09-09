@@ -2,8 +2,8 @@
 Changelog for package turtlebot4_navigation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.1.1 (2025-09-09)
+------------------
 * Fix SLAM parameter passing (`#631 <https://github.com/turtlebot/turtlebot4/issues/631>`_)
   * Instead of manually remapping topics, rewrite the parameters to apply namespaces as needed
   * Add map_name parameter to the config so we can overwrite it correctly
