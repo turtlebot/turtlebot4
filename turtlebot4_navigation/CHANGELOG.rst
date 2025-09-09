@@ -2,6 +2,14 @@
 Changelog for package turtlebot4_navigation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix SLAM parameter passing (`#631 <https://github.com/turtlebot/turtlebot4/issues/631>`_)
+  * Instead of manually remapping topics, rewrite the parameters to apply namespaces as needed
+  * Add map_name parameter to the config so we can overwrite it correctly
+* make footprint topic relative in collision monitor while using with namespace (`#606 <https://github.com/turtlebot/turtlebot4/issues/606>`_)
+* Contributors: Chris Iverach-Brereton, Kishan Sawant
+
 2.1.0 (2025-05-23)
 ------------------
 * Change footprint from radius to octagon of similar size (`#592 <https://github.com/turtlebot/turtlebot4/issues/592>`_)
